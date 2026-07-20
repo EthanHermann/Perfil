@@ -1,14 +1,14 @@
 import Image from 'next/image'
-import { Eye, ShieldCheck, Skull } from 'lucide-react'
+import { Eye, ShieldCheck } from 'lucide-react'
 import { SpectralBackground } from '@/components/spectral-background'
 import { LinkButton } from '@/components/link-button'
-import { InstagramIcon, DiscordIcon } from '@/components/brand-icons'
+import { InstagramIcon, DiscordIcon, FiveMIcon } from '@/components/brand-icons'
 
 // ─── Fácil de editar ──────────────────────────────────────────────
 const PROFILE = {
   name: 'Ethan',
   nickname: 'Final Boss',
-  username: '@itanbenevides',
+  username: '@itanbenevidess',
   bio: 'Coordenador de ScreenShare · Analista Administrativo',
   tagline: 'Onde os cheats encontram o seu fim.',
 }
@@ -16,8 +16,8 @@ const PROFILE = {
 const LINKS = [
   {
     label: 'Instagram',
-    sublabel: 'instagram.com/itanbenevide',
-    href: 'https://instagram.com/itanbenevide',
+    sublabel: 'instagram.com/itanbenevidess',
+    href: 'https://instagram.com/itanbenevidess',
     icon: <InstagramIcon className="size-5" />,
   },
   {
@@ -31,7 +31,7 @@ const LINKS = [
 const ROLES = [
   { icon: Eye, label: 'ScreenShare' },
   { icon: ShieldCheck, label: 'Analista Administrativo' },
-  { icon: Skull, label: 'FiveM' },
+  { icon: FiveMIcon, label: 'FiveM' },
 ]
 // ──────────────────────────────────────────────────────────────────
 
@@ -66,7 +66,7 @@ export default function Page() {
           <h1 className="font-display text-4xl font-extrabold tracking-widest text-foreground text-balance">
             {PROFILE.name}
           </h1>
-          <span className="mt-2 rounded-full border border-primary/70 bg-primary/25 px-3 py-1 font-display text-sm font-semibold tracking-wide text-primary-foreground shadow-[0_0_18px_-4px_oklch(0.62_0.24_300/0.8)]">
+          <span className="mt-2 rounded-full border border-primary/70 bg-primary/25 px-3 py-1 font-display text-sm font-semibold tracking-wide text-white shadow-[0_0_18px_-4px_oklch(0.62_0.24_300/0.8)]">
             {PROFILE.nickname}
           </span>
           <p className="mt-3 text-sm font-medium text-foreground">{PROFILE.bio}</p>
@@ -100,7 +100,7 @@ export default function Page() {
         <footer className="mt-12 flex flex-col items-center gap-5">
           <div className="flex items-center gap-4 text-muted-foreground">
             <a
-              href="https://instagram.com/itanbenevide"
+              href="https://instagram.com/itanbenevidess"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"

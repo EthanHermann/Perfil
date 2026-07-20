@@ -19,6 +19,14 @@ export function InstagramIcon(props: SVGProps<SVGSVGElement>) {
   )
 }
 
+export function FiveMIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...props}>
+      <path d="M3 3h18l-1.6 5.2H8.9l-.5 1.7h10.2L17 15.1H6.8L5.2 21H1.9z" />
+    </svg>
+  )
+}
+
 export function DiscordIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...props}>
