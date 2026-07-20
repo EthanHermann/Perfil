@@ -134,27 +134,19 @@
   }
 }
 
-/* ─── Cursor macabro em forma de cruz invertida (⸸) ─────────────────
-   Aplica em todas as telas. Um cursor "padrão" mais discreto e uma
-   variante mais brilhante/maior para elementos clicáveis. */
+/* ─── Cursor personalizado: cruz gótica (⸸) ─────────────────────────
+   Imagem PNG com fundo transparente, aplicada em TODA a interface.
+   O hotspot (8 2) fica na ponta superior da cruz. Usamos !important
+   e o seletor universal para que o cursor nunca volte ao padrão do
+   sistema — nem mesmo sobre botões, links ou os cards de cargo. */
 :root {
-  --cursor-cross: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='32' viewBox='0 0 26 32'%3E%3Cg fill='%23c084fc' stroke='%236b21a8' stroke-width='1.5' stroke-linejoin='round'%3E%3Crect x='10.5' y='1' width='5' height='30' rx='1.5'/%3E%3Crect x='3' y='21' width='20' height='5' rx='1.5'/%3E%3C/g%3E%3C/svg%3E")
-    13 3;
-  --cursor-cross-hover: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='38' viewBox='0 0 30 38'%3E%3Cg fill='%23e9d5ff' stroke='%237c3aed' stroke-width='1.75' stroke-linejoin='round'%3E%3Crect x='12' y='1' width='6' height='36' rx='2'/%3E%3Crect x='3' y='25' width='24' height='6' rx='2'/%3E%3C/g%3E%3C/svg%3E")
-    15 3;
+  --cursor-cross: url("/cursor-cross.png") 8 2;
 }
 
 html,
-body {
-  cursor: var(--cursor-cross), auto;
-}
-
-a,
-button,
-[role='button'],
-summary,
-label[for],
-select,
-.cursor-pointer {
-  cursor: var(--cursor-cross-hover), pointer;
+body,
+*,
+*::before,
+*::after {
+  cursor: var(--cursor-cross), auto !important;
 }
