@@ -20,39 +20,38 @@ export function EntryGate() {
     const audio = audioRef.current
     if (!audio) return
     audio.volume = 0.7
-
-    const startAtTwoSeconds = () => {
-      if (startedRef.current) return
-      startedRef.current = true
+    // Deixa o áudio pré-posicionado no segundo 2 já ao carregar, assim que os
+    // metadados estiverem disponíveis. Quando o play for liberado (autoplay ou
+    // clique), ele já começa daquele ponto — sem "pulo" visível.
+    const seekToTwo = () => {
       try {
-        audio.currentTime = 2
+        if (audio.currentTime < 2) audio.currentTime = 2
       } catch {
-        // Se os metadados ainda não carregaram, ajusta assim que possível.
-        audio.addEventListener(
-          "loadedmetadata",
-          () => {
-            audio.currentTime = 2
-          },
-          { once: true },
-        )
+        /* ignore */
       }
     }
+    if (audio.readyState >= 1) seekToTwo()
+    else audio.addEventListener("loadedmetadata", seekToTwo, { once: true })
 
     const tryPlay = () => {
-      startAtTwoSeconds()
+      if (!startedRef.current) {
+        startedRef.current = true
+        seekToTwo()
+      }
       audio.play().catch(() => {})
     }
 
-    // Attempt immediate autoplay (works when the browser allows it).
+    // Tenta tocar imediatamente (funciona quando o navegador permite autoplay).
     tryPlay()
 
-    // Fallback: resume on the very first user gesture and keep listening in
-    // case the browser pauses it. These are cheap no-ops while already playing.
+    // Fallback obrigatório: navegadores bloqueiam som antes de um gesto, então
+    // retomamos no primeiro toque/clique/tecla. No-op barato se já tocando.
     window.addEventListener("pointerdown", tryPlay)
     window.addEventListener("keydown", tryPlay)
     window.addEventListener("touchstart", tryPlay)
 
     return () => {
+      audio.removeEventListener("loadedmetadata", seekToTwo)
       window.removeEventListener("pointerdown", tryPlay)
       window.removeEventListener("keydown", tryPlay)
       window.removeEventListener("touchstart", tryPlay)
@@ -72,8 +71,17 @@ export function EntryGate() {
   function handleEnter() {
     if (entered) return
     setEntered(true)
-    // The click is a valid user gesture, so this reliably starts the music.
-    audioRef.current?.play().catch(() => {})
+    const audio = audioRef.current
+    if (audio) {
+      // O clique é um gesto válido: garante o início EXATO no segundo 2.
+      startedRef.current = true
+      try {
+        if (audio.currentTime < 2) audio.currentTime = 2
+      } catch {
+        /* ignore */
+      }
+      audio.play().catch(() => {})
+    }
     // Fade out, then remove the overlay from the DOM. The <audio> element is
     // rendered outside the overlay, so it keeps playing.
     window.setTimeout(() => setRemoved(true), 900)

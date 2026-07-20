@@ -4,6 +4,7 @@ import { SpectralBackground } from '@/components/spectral-background'
 import { LinkButton } from '@/components/link-button'
 import { EntryGate } from '@/components/entry-gate'
 import { ViewCounter } from '@/components/view-counter'
+import { FitToScreen } from '@/components/fit-to-screen'
 import { InstagramIcon, DiscordIcon, FiveMIcon } from '@/components/brand-icons'
 
 // ─── Fácil de editar ──────────────────────────────────────────────
@@ -38,11 +39,12 @@ const ROLES = [
 
 export default function Page() {
   return (
-    <main className="relative flex min-h-dvh flex-col items-center justify-center overflow-x-hidden overflow-y-auto px-4 py-6 sm:py-8">
+    <main className="relative h-dvh overflow-hidden">
       <SpectralBackground />
       <EntryGate />
 
-      <section className="relative z-10 flex w-full max-w-md flex-col items-center">
+      <FitToScreen>
+        <section className="flex w-full flex-col items-center">
         {/* Avatar */}
         <div className="animate-float-slow relative">
           <div className="absolute -inset-2 rounded-full bg-primary/40 blur-xl" aria-hidden="true" />
@@ -121,7 +123,7 @@ export default function Page() {
           </div>
 
           <blockquote className="w-full text-center">
-            <p className="whitespace-nowrap font-display text-[13px] italic leading-relaxed text-foreground/80 sm:text-sm">
+            <p className="text-pretty font-display text-[13px] italic leading-relaxed text-foreground/80 sm:text-sm">
               {'"Pai, perdoa-lhes, pois não sabem o que fazem."'}
             </p>
             <cite className="mt-1 block text-[11px] not-italic tracking-widest text-muted-foreground">
@@ -133,7 +135,8 @@ export default function Page() {
             © 2022 · Ethan Hermann
           </p>
         </footer>
-      </section>
+        </section>
+      </FitToScreen>
     </main>
   )
 }
