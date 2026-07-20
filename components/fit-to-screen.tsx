@@ -14,6 +14,7 @@ export function FitToScreen({ children }: { children: ReactNode }) {
   const outerRef = useRef<HTMLDivElement>(null)
   const innerRef = useRef<HTMLDivElement>(null)
   const [scale, setScale] = useState(1)
+  const [ready, setReady] = useState(false)
 
   useIsomorphicLayoutEffect(() => {
     const outer = outerRef.current
@@ -27,17 +28,23 @@ export function FitToScreen({ children }: { children: ReactNode }) {
       const availH = outer.clientHeight
       const availW = outer.clientWidth
       if (neededH === 0 || neededW === 0) return
-      const next = Math.min(1, availH / neededH, availW / neededW)
-      setScale((prev) => (Math.abs(prev - next) > 0.005 ? next : prev))
+      // Margem de segurança: nunca deixa o conteúdo encostar nas bordas.
+      const SAFETY = 0.94
+      const next = Math.min(1, (availH / neededH) * SAFETY, (availW / neededW) * SAFETY)
+      setScale((prev) => (Math.abs(prev - next) > 0.004 ? next : prev))
+      setReady(true)
     }
 
     compute()
+    // Recalcula após um frame, cobrindo fontes/imagens que mudam de tamanho.
+    const raf = requestAnimationFrame(compute)
     const ro = new ResizeObserver(compute)
     ro.observe(inner)
     ro.observe(outer)
     window.addEventListener("resize", compute)
     window.addEventListener("orientationchange", compute)
     return () => {
+      cancelAnimationFrame(raf)
       ro.disconnect()
       window.removeEventListener("resize", compute)
       window.removeEventListener("orientationchange", compute)
@@ -47,11 +54,15 @@ export function FitToScreen({ children }: { children: ReactNode }) {
   return (
     <div
       ref={outerRef}
-      className="relative z-10 flex h-dvh w-full items-center justify-center overflow-hidden px-4 py-4"
+      className="relative z-10 flex h-dvh w-full items-center justify-center overflow-hidden px-4 py-3"
     >
       <div
         ref={innerRef}
-        style={{ transform: `scale(${scale})`, transformOrigin: "center center" }}
+        style={{
+          transform: `scale(${scale})`,
+          transformOrigin: "center center",
+          visibility: ready ? "visible" : "hidden",
+        }}
         className="flex w-full max-w-md flex-col items-center"
       >
         {children}
