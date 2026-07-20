@@ -59,15 +59,15 @@ export default function Page() {
             />
           </div>
           {/* status online */}
-          <span className="animate-pulse-glow absolute bottom-1 right-1 flex items-center gap-1 rounded-full border border-primary bg-primary/20 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-primary shadow-[0_0_14px_2px_oklch(0.62_0.24_300/0.95)] backdrop-blur">
-            <span className="size-1.5 rounded-full bg-primary shadow-[0_0_6px_2px_oklch(0.62_0.24_300/0.95)]" />
+          <span className="absolute bottom-1 right-1 flex cursor-default items-center gap-1 rounded-full border border-primary bg-primary/40 px-2 py-0.5 text-[10px] font-bold tracking-wide text-primary-foreground shadow-[0_0_16px_2px_oklch(0.62_0.24_300/0.85)] backdrop-blur transition-all duration-300 hover:scale-105 hover:bg-primary/60 hover:shadow-[0_0_28px_6px_oklch(0.62_0.24_300/0.95)]">
+            <span className="animate-pulse-glow size-1.5 rounded-full bg-primary-foreground shadow-[0_0_6px_2px_oklch(0.62_0.24_300/0.95)]" />
             ONLINE
           </span>
         </div>
 
         {/* Nome + apelido */}
         <div className="mt-4 flex flex-col items-center text-center">
-          <h1 className="font-display text-4xl font-extrabold tracking-widest text-foreground text-balance">
+          <h1 className="cursor-default font-display text-4xl font-extrabold tracking-widest text-foreground text-balance transition-all duration-300 hover:text-primary hover:[text-shadow:0_0_24px_oklch(0.62_0.24_300/0.85)]">
             {PROFILE.name}
           </h1>
           <span className="mt-2 rounded-full border border-primary/70 bg-primary/25 px-3 py-1 font-display text-sm font-semibold tracking-wide text-white shadow-[0_0_18px_-4px_oklch(0.62_0.24_300/0.8)]">
@@ -122,11 +122,11 @@ export default function Page() {
             </a>
           </div>
 
-          <blockquote className="w-full text-center">
-            <p className="text-pretty font-display text-[13px] italic leading-relaxed text-foreground/80 sm:text-sm">
+          <blockquote className="group/verse w-full cursor-default text-center">
+            <p className="text-pretty font-display text-[13px] italic leading-relaxed text-foreground/80 transition-all duration-300 group-hover/verse:text-primary group-hover/verse:[text-shadow:0_0_18px_oklch(0.62_0.24_300/0.7)] sm:text-sm">
               {'"Pai, perdoa-lhes, pois não sabem o que fazem."'}
             </p>
-            <cite className="mt-1 block text-[11px] not-italic tracking-widest text-muted-foreground">
+            <cite className="mt-1 block text-[11px] not-italic tracking-widest text-muted-foreground transition-colors duration-300 group-hover/verse:text-primary/80">
               LUCAS 23:34
             </cite>
           </blockquote>

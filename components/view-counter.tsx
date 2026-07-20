@@ -2,45 +2,42 @@
 
 import { useEffect, useState } from "react"
 
-const BASE_COUNT = 1027
-const STORAGE_KEY = "profile-view-count"
+// Guarda em nível de módulo: garante que UM carregamento de página só
+// incremente o contador uma única vez, mesmo com o double-invoke do
+// StrictMode do React em desenvolvimento.
+let hasCountedThisLoad = false
 
 /**
- * Vanity view counter. Starts at 1027 and increments automatically over time.
- * The current value is persisted in localStorage so it keeps growing between
- * visits instead of resetting. Shows only the number (no label, no icon).
+ * Contador REAL e global de carregamentos da página.
+ * A cada vez que a página é aberta, faz um POST em /api/views que
+ * incrementa o valor no banco (Neon) e exibe o total compartilhado
+ * entre todos os visitantes. Não há incremento falso/automático.
  */
 export function ViewCounter() {
   const [count, setCount] = useState<number | null>(null)
 
   useEffect(() => {
-    let current = BASE_COUNT
-    try {
-      const stored = Number(window.localStorage.getItem(STORAGE_KEY))
-      if (Number.isFinite(stored) && stored >= BASE_COUNT) {
-        current = stored
+    let cancelled = false
+
+    async function run() {
+      try {
+        // Se este carregamento já foi contado, apenas lê o valor atual.
+        const method = hasCountedThisLoad ? "GET" : "POST"
+        hasCountedThisLoad = true
+
+        const res = await fetch("/api/views", { method, cache: "no-store" })
+        if (!res.ok) throw new Error("bad response")
+        const data = (await res.json()) as { count?: number }
+        if (!cancelled) setCount(Number(data.count) || 0)
+      } catch {
+        if (!cancelled) setCount(null)
       }
-    } catch {
-      // ignore storage errors
     }
 
-    // Count this visit immediately.
-    current += 1
-    setCount(current)
-    try {
-      window.localStorage.setItem(STORAGE_KEY, String(current))
-    } catch {}
-
-    // Then keep incrementing automatically while the page is open.
-    const interval = window.setInterval(() => {
-      current += Math.floor(Math.random() * 2) + 1 // +1 or +2
-      setCount(current)
-      try {
-        window.localStorage.setItem(STORAGE_KEY, String(current))
-      } catch {}
-    }, 8000)
-
-    return () => window.clearInterval(interval)
+    run()
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   return (
