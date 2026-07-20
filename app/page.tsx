@@ -3,6 +3,7 @@ import { Eye, ShieldCheck } from 'lucide-react'
 import { SpectralBackground } from '@/components/spectral-background'
 import { LinkButton } from '@/components/link-button'
 import { EntryGate } from '@/components/entry-gate'
+import { ViewCounter } from '@/components/view-counter'
 import { InstagramIcon, DiscordIcon, FiveMIcon } from '@/components/brand-icons'
 
 // ─── Fácil de editar ──────────────────────────────────────────────
@@ -56,8 +57,8 @@ export default function Page() {
             />
           </div>
           {/* status online */}
-          <span className="animate-pulse-glow absolute bottom-1 right-1 flex items-center gap-1 rounded-full border border-primary bg-primary px-2 py-0.5 text-[10px] font-semibold tracking-wide text-white shadow-[0_0_14px_2px_oklch(0.62_0.24_300/0.95)]">
-            <span className="size-1.5 rounded-full bg-white shadow-[0_0_6px_2px_oklch(1_0_0/0.9)]" />
+          <span className="animate-pulse-glow absolute bottom-1 right-1 flex items-center gap-1 rounded-full border border-primary bg-primary/20 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-primary shadow-[0_0_14px_2px_oklch(0.62_0.24_300/0.95)] backdrop-blur">
+            <span className="size-1.5 rounded-full bg-primary shadow-[0_0_6px_2px_oklch(0.62_0.24_300/0.95)]" />
             ONLINE
           </span>
         </div>
@@ -95,6 +96,8 @@ export default function Page() {
 
         {/* Footer */}
         <footer className="mt-6 flex flex-col items-center gap-3">
+          <ViewCounter />
+
           <div className="flex items-center gap-4 text-muted-foreground">
             <a
               href="https://instagram.com/itanbenevides"
