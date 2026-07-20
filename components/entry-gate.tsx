@@ -7,6 +7,9 @@ export function EntryGate() {
   const [entered, setEntered] = useState(false)
   const [removed, setRemoved] = useState(false)
   const audioRef = useRef<HTMLAudioElement | null>(null)
+  // Garante que o "pulo" para os 2s só aconteça na primeira reprodução,
+  // sem interferir no loop (que deve reiniciar normalmente do começo).
+  const startedRef = useRef(false)
 
   // A single, persistent <audio> element lives for the whole lifetime of this
   // component (see the render below). We try to start it as soon as the site
@@ -18,7 +21,25 @@ export function EntryGate() {
     if (!audio) return
     audio.volume = 0.7
 
+    const startAtTwoSeconds = () => {
+      if (startedRef.current) return
+      startedRef.current = true
+      try {
+        audio.currentTime = 2
+      } catch {
+        // Se os metadados ainda não carregaram, ajusta assim que possível.
+        audio.addEventListener(
+          "loadedmetadata",
+          () => {
+            audio.currentTime = 2
+          },
+          { once: true },
+        )
+      }
+    }
+
     const tryPlay = () => {
+      startAtTwoSeconds()
       audio.play().catch(() => {})
     }
 

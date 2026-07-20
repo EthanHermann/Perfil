@@ -38,7 +38,7 @@ const ROLES = [
 
 export default function Page() {
   return (
-    <main className="relative flex h-dvh flex-col items-center justify-center overflow-hidden px-4 py-8">
+    <main className="relative flex min-h-dvh flex-col items-center justify-center overflow-x-hidden overflow-y-auto px-4 py-6 sm:py-8">
       <SpectralBackground />
       <EntryGate />
 
