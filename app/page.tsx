@@ -2,6 +2,8 @@ import Image from 'next/image'
 import { Eye, ShieldCheck } from 'lucide-react'
 import { SpectralBackground } from '@/components/spectral-background'
 import { LinkButton } from '@/components/link-button'
+import { EntryGate } from '@/components/entry-gate'
+import { ViewCounter } from '@/components/view-counter'
 import { InstagramIcon, DiscordIcon, FiveMIcon } from '@/components/brand-icons'
 
 // ─── Fácil de editar ──────────────────────────────────────────────
@@ -36,8 +38,9 @@ const ROLES = [
 
 export default function Page() {
   return (
-    <main className="relative flex min-h-dvh flex-col items-center justify-center px-4 py-12">
+    <main className="relative flex h-dvh flex-col items-center justify-center overflow-hidden px-4 py-8">
       <SpectralBackground />
+      <EntryGate />
 
       <section className="relative z-10 flex w-full max-w-md flex-col items-center">
         {/* Avatar */}
@@ -54,14 +57,14 @@ export default function Page() {
             />
           </div>
           {/* status online */}
-          <span className="animate-pulse-glow absolute bottom-1 right-1 flex items-center gap-1 rounded-full border border-primary bg-primary px-2 py-0.5 text-[10px] font-semibold tracking-wide text-white shadow-[0_0_14px_2px_oklch(0.62_0.24_300/0.95)]">
-            <span className="size-1.5 rounded-full bg-white shadow-[0_0_6px_2px_oklch(1_0_0/0.9)]" />
+          <span className="animate-pulse-glow absolute bottom-1 right-1 flex items-center gap-1 rounded-full border border-primary bg-primary/20 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-primary shadow-[0_0_14px_2px_oklch(0.62_0.24_300/0.95)] backdrop-blur">
+            <span className="size-1.5 rounded-full bg-primary shadow-[0_0_6px_2px_oklch(0.62_0.24_300/0.95)]" />
             ONLINE
           </span>
         </div>
 
         {/* Nome + apelido */}
-        <div className="mt-6 flex flex-col items-center text-center">
+        <div className="mt-4 flex flex-col items-center text-center">
           <h1 className="font-display text-4xl font-extrabold tracking-widest text-foreground text-balance">
             {PROFILE.name}
           </h1>
@@ -72,11 +75,11 @@ export default function Page() {
         </div>
 
         {/* Roles */}
-        <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
           {ROLES.map((r) => (
             <span
               key={r.label}
-              className="flex items-center gap-1.5 rounded-full border border-border bg-card/40 px-3 py-1 text-xs text-muted-foreground backdrop-blur"
+              className="group flex cursor-default items-center gap-1.5 rounded-full border border-border bg-card/40 px-3 py-1 text-xs text-muted-foreground backdrop-blur transition-colors duration-300 hover:border-primary/60 hover:text-primary"
             >
               <r.icon className="size-3.5 text-primary" />
               {r.label}
@@ -85,14 +88,16 @@ export default function Page() {
         </div>
 
         {/* Links */}
-        <nav className="mt-8 flex w-full flex-col gap-3" aria-label="Meus links">
+        <nav className="mt-6 flex w-full flex-col gap-3" aria-label="Meus links">
           {LINKS.map((link) => (
             <LinkButton key={link.label} {...link} />
           ))}
         </nav>
 
         {/* Footer */}
-        <footer className="mt-12 flex flex-col items-center gap-5">
+        <footer className="mt-6 flex flex-col items-center gap-3">
+          <ViewCounter />
+
           <div className="flex items-center gap-4 text-muted-foreground">
             <a
               href="https://instagram.com/itanbenevides"

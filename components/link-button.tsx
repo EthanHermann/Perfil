@@ -24,11 +24,13 @@ export function LinkButton({ href, label, sublabel, icon }: LinkButtonProps) {
       </span>
 
       <span className="flex min-w-0 flex-col text-left">
-        <span className="font-display text-base font-bold tracking-wide text-foreground">
+        <span className="font-display text-base font-bold tracking-wide text-foreground transition-colors duration-300 group-hover:text-primary">
           {label}
         </span>
         {sublabel ? (
-          <span className="truncate text-xs text-muted-foreground">{sublabel}</span>
+          <span className="truncate text-xs text-muted-foreground transition-colors duration-300 group-hover:text-primary/70">
+            {sublabel}
+          </span>
         ) : null}
       </span>
 
