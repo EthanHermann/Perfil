@@ -21,7 +21,7 @@ const LINKS = [
   },
   {
     label: 'Discord',
-    sublabel: 'Ethan Herman · SS',
+    sublabel: 'Ethan Hermann · SS',
     href: 'https://discord.com/users/369812409768083466',
     icon: <DiscordIcon className="size-5" />,
   },
