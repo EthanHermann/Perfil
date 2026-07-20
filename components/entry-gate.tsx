@@ -87,12 +87,12 @@ export function EntryGate() {
           src="/enter-button.png"
           alt=""
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 size-full scale-110 opacity-70 blur-2xl"
+          className="pointer-events-none absolute inset-0 size-full scale-125 opacity-40 blur-3xl"
         />
         <img
           src="/enter-button.png"
           alt="Logo do perfil"
-          className="animate-float-slow relative w-64 max-w-[70vw] object-contain mix-blend-screen drop-shadow-[0_0_45px_oklch(0.62_0.24_300/0.85)] transition-transform duration-500 group-hover:scale-105 sm:w-80"
+          className="animate-float-slow relative w-40 max-w-[52vw] object-contain mix-blend-screen drop-shadow-[0_0_30px_oklch(0.62_0.24_300/0.7)] transition-transform duration-500 group-hover:scale-105 sm:w-52"
         />
       </span>
     </button>
