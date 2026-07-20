@@ -31,7 +31,7 @@ const LINKS = [
 const ROLES = [
   { icon: Eye, label: 'ScreenShare' },
   { icon: ShieldCheck, label: 'Analista Administrativo' },
-  { icon: Skull, label: 'Cidades GTA RP' },
+  { icon: Skull, label: 'FiveM' },
 ]
 // ──────────────────────────────────────────────────────────────────
 
@@ -66,7 +66,7 @@ export default function Page() {
           <h1 className="font-display text-4xl font-extrabold tracking-widest text-foreground text-balance">
             {PROFILE.name}
           </h1>
-          <span className="mt-2 rounded-full border border-primary/50 bg-primary/15 px-3 py-1 font-display text-sm font-semibold tracking-wide text-accent">
+          <span className="mt-2 rounded-full border border-primary/70 bg-primary/25 px-3 py-1 font-display text-sm font-semibold tracking-wide text-primary-foreground shadow-[0_0_18px_-4px_oklch(0.62_0.24_300/0.8)]">
             {PROFILE.nickname}
           </span>
           <p className="mt-3 text-sm font-medium text-foreground">{PROFILE.bio}</p>
@@ -119,8 +119,8 @@ export default function Page() {
             </a>
           </div>
 
-          <blockquote className="max-w-xs text-center">
-            <p className="font-display text-sm italic leading-relaxed text-foreground/80 text-pretty">
+          <blockquote className="w-full text-center">
+            <p className="whitespace-nowrap font-display text-[13px] italic leading-relaxed text-foreground/80 sm:text-sm">
               {'"Pai, perdoa-lhes, pois não sabem o que fazem."'}
             </p>
             <cite className="mt-1 block text-[11px] not-italic tracking-widest text-muted-foreground">
@@ -129,7 +129,7 @@ export default function Page() {
           </blockquote>
 
           <p className="text-[10px] tracking-widest text-muted-foreground/60">
-            © {new Date().getFullYear()} · FINAL BOSS
+            © {new Date().getFullYear()} · Ethan Hermann
           </p>
         </footer>
       </section>
