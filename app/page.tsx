@@ -9,20 +9,19 @@ const PROFILE = {
   name: 'Ethan',
   nickname: 'Final Boss',
   username: '@itanbenevidess',
-  bio: 'Coordenador de ScreenShare · Analista Administrativo',
-  tagline: 'Onde os cheats encontram o seu fim.',
+  bio: 'Coor. ScreenShare · Analista Administrativo',
 }
 
 const LINKS = [
   {
     label: 'Instagram',
-    sublabel: 'instagram.com/itanbenevidess',
-    href: 'https://instagram.com/itanbenevidess',
+    sublabel: 'instagram.com/itanbenevides',
+    href: 'https://instagram.com/itanbenevides',
     icon: <InstagramIcon className="size-5" />,
   },
   {
     label: 'Discord',
-    sublabel: 'Final Boss · SS',
+    sublabel: 'Ethan Herman · SS',
     href: 'https://discord.com/users/369812409768083466',
     icon: <DiscordIcon className="size-5" />,
   },
@@ -55,8 +54,8 @@ export default function Page() {
             />
           </div>
           {/* status online */}
-          <span className="absolute bottom-1 right-1 flex items-center gap-1 rounded-full border border-border bg-background/90 px-2 py-0.5 text-[10px] font-medium text-accent backdrop-blur">
-            <span className="size-1.5 rounded-full bg-accent shadow-[0_0_6px_2px_oklch(0.68_0.2_320/0.8)]" />
+          <span className="animate-pulse-glow absolute bottom-1 right-1 flex items-center gap-1 rounded-full border border-primary bg-primary px-2 py-0.5 text-[10px] font-semibold tracking-wide text-white shadow-[0_0_14px_2px_oklch(0.62_0.24_300/0.95)]">
+            <span className="size-1.5 rounded-full bg-white shadow-[0_0_6px_2px_oklch(1_0_0/0.9)]" />
             ONLINE
           </span>
         </div>
@@ -70,10 +69,6 @@ export default function Page() {
             {PROFILE.nickname}
           </span>
           <p className="mt-3 text-sm font-medium text-foreground">{PROFILE.bio}</p>
-          <p className="mt-1 text-xs text-muted-foreground">{PROFILE.username}</p>
-          <p className="mt-3 max-w-xs text-sm italic text-muted-foreground text-pretty">
-            {PROFILE.tagline}
-          </p>
         </div>
 
         {/* Roles */}
@@ -100,7 +95,7 @@ export default function Page() {
         <footer className="mt-12 flex flex-col items-center gap-5">
           <div className="flex items-center gap-4 text-muted-foreground">
             <a
-              href="https://instagram.com/itanbenevidess"
+              href="https://instagram.com/itanbenevides"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
