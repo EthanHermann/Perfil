@@ -130,7 +130,7 @@ export default function Page() {
           </blockquote>
 
           <p className="text-[10px] tracking-widest text-muted-foreground/60">
-            © {new Date().getFullYear()} · Ethan Hermann
+            © 2022 · Ethan Hermann
           </p>
         </footer>
       </section>
