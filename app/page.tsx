@@ -74,14 +74,15 @@ export default function Page() {
           <p className="mt-3 text-sm font-medium text-foreground">{PROFILE.bio}</p>
         </div>
 
-        {/* Roles */}
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+        {/* Roles — sempre os três alinhados na mesma linha */}
+        <div className="mt-4 flex w-full flex-nowrap items-center justify-center gap-1.5">
           {ROLES.map((r) => (
             <span
               key={r.label}
-              className="group flex cursor-default items-center gap-1.5 rounded-full border border-border bg-card/40 px-3 py-1 text-xs text-muted-foreground backdrop-blur transition-colors duration-300 hover:border-primary/60 hover:text-primary"
+              translate="no"
+              className="notranslate group flex shrink-0 cursor-default items-center gap-1 whitespace-nowrap rounded-full border border-border bg-card/40 px-2.5 py-1 text-[11px] text-muted-foreground backdrop-blur transition-colors duration-300 hover:border-primary/60 hover:text-primary"
             >
-              <r.icon className="size-3.5 text-primary" />
+              <r.icon className="size-3.5 shrink-0 text-primary" />
               {r.label}
             </span>
           ))}
@@ -94,8 +95,8 @@ export default function Page() {
           ))}
         </nav>
 
-        {/* Footer */}
-        <footer className="mt-6 flex flex-col items-center gap-3">
+        {/* Footer — mt igual ao gap para centralizar o contador entre os Discord */}
+        <footer className="mt-4 flex flex-col items-center gap-4">
           <ViewCounter />
 
           <div className="flex items-center gap-4 text-muted-foreground">
