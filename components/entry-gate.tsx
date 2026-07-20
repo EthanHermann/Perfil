@@ -45,6 +45,14 @@ export function EntryGate() {
     }
   }, [removed])
 
+  // Safety net for looping: if the track ever ends, restart it.
+  function handleEnded() {
+    const audio = audioRef.current
+    if (!audio) return
+    audio.currentTime = 0
+    audio.play().catch(() => {})
+  }
+
   function handleEnter() {
     if (entered) return
     setEntered(true)
@@ -56,7 +64,7 @@ export function EntryGate() {
 
   if (removed) {
     // Keep the audio mounted so the music keeps playing after entering.
-    return <audio ref={audioRef} src="/enter-sound.mp3" preload="auto" loop />
+    return <audio ref={audioRef} src="/enter-sound.mp3" preload="auto" loop onEnded={handleEnded} />
   }
 
   return (
@@ -68,7 +76,7 @@ export function EntryGate() {
         entered ? "pointer-events-none opacity-0" : "opacity-100"
       }`}
     >
-      <audio ref={audioRef} src="/enter-sound.mp3" preload="auto" loop />
+      <audio ref={audioRef} src="/enter-sound.mp3" preload="auto" loop onEnded={handleEnded} />
 
       {/* Dark purple background + full-screen blur over the hidden content */}
       <div className="absolute inset-0 bg-background/80 backdrop-blur-2xl" />
