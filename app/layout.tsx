@@ -20,6 +20,9 @@ export const metadata: Metadata = {
   description:
     'ScreenShare Coordinator · Analista Administrativo. Onde os cheats encontram seu fim.',
   generator: 'v0.app',
+  other: {
+    google: 'notranslate',
+  },
 }
 
 export const viewport: Viewport = {
@@ -35,7 +38,8 @@ export default function RootLayout({
   return (
     <html
       lang="pt-BR"
-      className={`dark bg-background ${geistSans.variable} ${cinzel.variable}`}
+      translate="no"
+      className={`notranslate dark bg-background ${geistSans.variable} ${cinzel.variable}`}
     >
       <body className="font-sans antialiased">
         {children}

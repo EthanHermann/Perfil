@@ -4,6 +4,7 @@ import { SpectralBackground } from '@/components/spectral-background'
 import { LinkButton } from '@/components/link-button'
 import { EntryGate } from '@/components/entry-gate'
 import { ViewCounter } from '@/components/view-counter'
+import { FitToScreen } from '@/components/fit-to-screen'
 import { InstagramIcon, DiscordIcon, FiveMIcon } from '@/components/brand-icons'
 
 // ─── Fácil de editar ──────────────────────────────────────────────
@@ -38,11 +39,12 @@ const ROLES = [
 
 export default function Page() {
   return (
-    <main className="relative flex h-dvh flex-col items-center justify-center overflow-hidden px-4 py-8">
+    <main className="relative h-dvh overflow-hidden">
       <SpectralBackground />
       <EntryGate />
 
-      <section className="relative z-10 flex w-full max-w-md flex-col items-center">
+      <FitToScreen>
+        <section className="flex w-full flex-col items-center">
         {/* Avatar */}
         <div className="animate-float-slow relative">
           <div className="absolute -inset-2 rounded-full bg-primary/40 blur-xl" aria-hidden="true" />
@@ -74,14 +76,15 @@ export default function Page() {
           <p className="mt-3 text-sm font-medium text-foreground">{PROFILE.bio}</p>
         </div>
 
-        {/* Roles */}
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+        {/* Roles — sempre os três alinhados na mesma linha */}
+        <div className="mt-4 flex w-full flex-nowrap items-center justify-center gap-1.5">
           {ROLES.map((r) => (
             <span
               key={r.label}
-              className="group flex cursor-default items-center gap-1.5 rounded-full border border-border bg-card/40 px-3 py-1 text-xs text-muted-foreground backdrop-blur transition-colors duration-300 hover:border-primary/60 hover:text-primary"
+              translate="no"
+              className="notranslate group flex shrink-0 cursor-default items-center gap-1 whitespace-nowrap rounded-full border border-border bg-card/40 px-2.5 py-1 text-[11px] text-muted-foreground backdrop-blur transition-colors duration-300 hover:border-primary/60 hover:text-primary"
             >
-              <r.icon className="size-3.5 text-primary" />
+              <r.icon className="size-3.5 shrink-0 text-primary" />
               {r.label}
             </span>
           ))}
@@ -94,8 +97,8 @@ export default function Page() {
           ))}
         </nav>
 
-        {/* Footer */}
-        <footer className="mt-6 flex flex-col items-center gap-3">
+        {/* Footer — mt igual ao gap para centralizar o contador entre os Discord */}
+        <footer className="mt-4 flex flex-col items-center gap-4">
           <ViewCounter />
 
           <div className="flex items-center gap-4 text-muted-foreground">
@@ -120,7 +123,7 @@ export default function Page() {
           </div>
 
           <blockquote className="w-full text-center">
-            <p className="whitespace-nowrap font-display text-[13px] italic leading-relaxed text-foreground/80 sm:text-sm">
+            <p className="text-pretty font-display text-[13px] italic leading-relaxed text-foreground/80 sm:text-sm">
               {'"Pai, perdoa-lhes, pois não sabem o que fazem."'}
             </p>
             <cite className="mt-1 block text-[11px] not-italic tracking-widest text-muted-foreground">
@@ -129,10 +132,11 @@ export default function Page() {
           </blockquote>
 
           <p className="text-[10px] tracking-widest text-muted-foreground/60">
-            © {new Date().getFullYear()} · Ethan Hermann
+            © 2022 · Ethan Hermann
           </p>
         </footer>
-      </section>
+        </section>
+      </FitToScreen>
     </main>
   )
 }
