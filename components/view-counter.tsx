@@ -43,10 +43,11 @@ export function ViewCounter() {
   return (
     <div
       translate="no"
-      className="notranslate flex items-center justify-center rounded-full border border-primary/40 bg-background/40 px-4 py-1.5 backdrop-blur-md shadow-[0_0_18px_-6px_oklch(0.62_0.24_300/0.8)]"
+      className="notranslate flex items-center gap-2 rounded-md border border-border bg-card/30 px-3 py-1.5 backdrop-blur-md"
     >
-      <span className="text-sm font-medium tabular-nums tracking-wide text-foreground/90">
-        {count === null ? "—" : count.toLocaleString("pt-BR")}
+      <span className="font-mono text-[10px] text-muted-foreground tracking-widest uppercase">views</span>
+      <span className="font-mono text-xs font-semibold tabular-nums tracking-wide text-primary">
+        {count === null ? "···" : count.toLocaleString("pt-BR")}
       </span>
     </div>
   )

@@ -16,10 +16,9 @@ const cinzel = Cinzel({
 })
 
 export const metadata: Metadata = {
-  title: 'Ethan · Final Boss',
+  title: 'Ethan Hermann · dev',
   description:
-    'ScreenShare Coordinator · Analista Administrativo. Onde os cheats encontram seu fim.',
-  generator: 'v0.app',
+    'Desenvolvedor. ScreenShare Coordinator. Onde os cheats encontram seu fim.',
   other: {
     google: 'notranslate',
   },
