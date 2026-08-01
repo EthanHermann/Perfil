@@ -14,7 +14,7 @@
   --animate-pulse-glow: pulse-glow 3.5s ease-in-out infinite;
   --animate-scan-line: scan-line 8s linear infinite;
   --animate-blink-cursor: blink-cursor 1s step-end infinite;
-  --animate-glitch: glitch 6s steps(1) infinite;
+  --animate-glitch: glitch 3s steps(1) infinite;
 
   /* Sidebar tokens */
   --color-sidebar-ring: var(--sidebar-ring);

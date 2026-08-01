@@ -87,7 +87,7 @@ export default function Page() {
           {/* ── Nome + handle ────────────────────────────────────── */}
           <div className="mt-5 flex flex-col items-center text-center">
             <div className="flex items-baseline gap-2">
-              <h1 className="animate-[glitch_6s_steps(1)_infinite] font-display text-3xl font-extrabold tracking-widest text-foreground text-balance hover:text-primary transition-colors duration-300 hover:[text-shadow:0_0_20px_oklch(0.65_0.26_295/0.85)]">
+              <h1 className="animate-[glitch_3s_steps(1)_infinite] font-display text-3xl font-extrabold tracking-widest text-foreground text-balance hover:text-primary transition-colors duration-300 hover:animate-[glitch_1s_steps(1)_infinite] hover:[text-shadow:0_0_20px_oklch(0.65_0.26_295/0.85)]">
                 {PROFILE.name}
               </h1>
               <span className="font-mono text-[10px] font-semibold uppercase tracking-widest text-primary border border-primary/50 rounded px-1.5 py-0.5 bg-primary/10">
