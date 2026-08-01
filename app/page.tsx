@@ -60,6 +60,23 @@ export default function Page() {
             <span className="animate-[blink-cursor_1s_step-end_infinite] ml-0.5 inline-block w-[5px] h-[10px] bg-primary/70" aria-hidden="true" />
           </div>
 
+          {/* ── Favicon centralizado ────────────────────────────── */}
+          <div className="mb-4 relative">
+            <div
+              className="absolute -inset-4 rounded-xl blur-2xl opacity-40"
+              style={{ background: 'oklch(0.65 0.26 295 / 0.4)' }}
+              aria-hidden="true"
+            />
+            <Image
+              src="/favicon-large.png"
+              alt="Logo do Ethan"
+              width={80}
+              height={80}
+              priority
+              className="relative rounded-lg shadow-[0_0_24px_-2px_oklch(0.65_0.26_295/0.6)]"
+            />
+          </div>
+
           {/* ── Avatar ──────────────────────────────────────────── */}
           <div className="animate-float-slow relative">
             <div
