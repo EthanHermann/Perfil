@@ -165,10 +165,10 @@
     to bottom,
     transparent 0px,
     transparent 3px,
-    oklch(0.09 0.025 295 / 0.25) 3px,
-    oklch(0.09 0.025 295 / 0.25) 4px
+    oklch(0.09 0.025 295 / 0.08) 3px,
+    oklch(0.09 0.025 295 / 0.08) 4px
   );
-  z-index: 100;
+  z-index: -1;
 }
 
 /* ─── Cursor personalizado (terminal/dev style) ─────────────────── */
