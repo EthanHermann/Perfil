@@ -4,12 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { Play, Pause, SkipForward, SkipBack, Music } from "lucide-react"
 
 const TRACKS = [
-  { id: 1, title: "Novo Balanço", artist: "Veigh", duration: "3:49", youtube: "uGMQbSy_JTM" },
-  { id: 2, title: "Cheguei Aqui", artist: "Veigh", duration: "2:51", youtube: "v3d4F5K9M2L1Q7W" },
-  { id: 3, title: "Não Me Conhece", artist: "Veigh", duration: "3:21", youtube: "X8Y9Z0a1B2C3D4E" },
-  { id: 4, title: "Os Problemas São Meus", artist: "Veigh", duration: "4:03", youtube: "F5G6H7I8J9K0L1M" },
-  { id: 5, title: "Bora Lá", artist: "Veigh", duration: "2:45", youtube: "N2O3P4Q5R6S7T8U" },
-  { id: 6, title: "Dos Prédios", artist: "Veigh", duration: "3:35", youtube: "V9W0X1Y2Z3a4B5C" },
+  { id: 1, title: "Clickbait FT Niink", artist: "Veigh", duration: "1:45", youtube: "XdGmHIZmg4w" },
 ]
 
 export function MusicPlayer() {
@@ -63,12 +58,14 @@ export function MusicPlayer() {
         {/* Album art + controls (compact row) */}
         <div className="flex items-center gap-3 p-3">
           {/* Album cover - small square */}
-          <div className="relative shrink-0 size-16 rounded-lg bg-gradient-to-br from-primary/30 to-primary/10 border border-border/50 overflow-hidden">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Music className="size-8 text-primary/40" strokeWidth={1.5} />
-            </div>
+          <div className="relative shrink-0 size-16 rounded-lg border-2 border-primary/30 overflow-hidden bg-black/40">
+            <img
+              src="/album-dos-predios.png"
+              alt="Dos Prédios Deluxe"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
             {playing && (
-              <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-primary/30 to-transparent" />
             )}
           </div>
 
