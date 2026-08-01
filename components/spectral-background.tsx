@@ -1,32 +1,16 @@
 'use client'
 
-// Partículas determinísticas — sem mismatch de hidratação.
-const PARTICLES = [
-  { left: 5,  delay: 0,   duration: 11, size: 2, drift:  18 },
-  { left: 12, delay: 2.5, duration: 14, size: 1, drift: -22 },
-  { left: 21, delay: 5,   duration: 9,  size: 2, drift:  12 },
-  { left: 30, delay: 1,   duration: 13, size: 1, drift: -16 },
-  { left: 39, delay: 4,   duration: 10, size: 2, drift:  24 },
-  { left: 48, delay: 7,   duration: 12, size: 1, drift: -10 },
-  { left: 57, delay: 2,   duration: 15, size: 2, drift:  20 },
-  { left: 66, delay: 0.5, duration: 10, size: 1, drift: -28 },
-  { left: 74, delay: 6,   duration: 13, size: 2, drift:  16 },
-  { left: 83, delay: 3.5, duration: 11, size: 1, drift: -14 },
-  { left: 91, delay: 8,   duration: 14, size: 2, drift:  22 },
-  { left: 96, delay: 1.8, duration: 9,  size: 1, drift: -18 },
-]
+// Caracteres hacker para matrix rain
+const HACKER_CHARS = ['0', '1', 'A', 'B', 'C', 'D', 'E', 'F', 'x', '>', '<', '/', '\\', '|', '!', '@', '#', '$', '%', '^', '&', '*', '+', '-', '=', '?', '~', '`', '(', ')', '[', ']', '{', '}']
 
-// Texto de código flutuando ao fundo (estilo matrix sutil)
-const CODE_SNIPPETS = [
-  { text: 'const',  left: 8,  top: 15, opacity: 0.06 },
-  { text: '() =>',  left: 72, top: 22, opacity: 0.05 },
-  { text: '{}',     left: 18, top: 55, opacity: 0.07 },
-  { text: '0x4F',   left: 85, top: 40, opacity: 0.06 },
-  { text: 'while',  left: 40, top: 75, opacity: 0.05 },
-  { text: 'async',  left: 60, top: 10, opacity: 0.06 },
-  { text: 'null',   left: 28, top: 88, opacity: 0.05 },
-  { text: '=>',     left: 92, top: 68, opacity: 0.07 },
-]
+// Gera muitos caracteres caindo de forma densa
+const FALLING_MATRIX = Array.from({ length: 50 }).map((_, i) => ({
+  char: HACKER_CHARS[Math.floor(Math.random() * HACKER_CHARS.length)],
+  left: Math.random() * 100,
+  delay: Math.random() * 8,
+  duration: 8 + Math.random() * 6,
+  drift: (Math.random() - 0.5) * 40,
+}))
 
 export function SpectralBackground() {
   return (
@@ -56,32 +40,21 @@ export function SpectralBackground() {
         }}
       />
 
-      {/* Snippets de código ao fundo */}
-      {CODE_SNIPPETS.map((s, i) => (
+      {/* Matrix rain — caracteres hacker caindo em densidade alta */}
+      {FALLING_MATRIX.map((m, i) => (
         <span
           key={i}
-          className="absolute font-mono text-[11px] text-primary select-none"
-          style={{ left: `${s.left}%`, top: `${s.top}%`, opacity: s.opacity }}
-        >
-          {s.text}
-        </span>
-      ))}
-
-      {/* Partículas caindo */}
-      {PARTICLES.map((p, i) => (
-        <span
-          key={i}
-          className="absolute top-0 rounded-full"
+          className="absolute top-0 font-mono font-bold text-primary/50 select-none"
           style={{
-            left: `${p.left}%`,
-            width: `${p.size}px`,
-            height: `${p.size}px`,
-            background: 'oklch(0.72 0.22 310 / 0.65)',
-            boxShadow: '0 0 6px 1px oklch(0.65 0.26 295 / 0.5)',
-            animation: `fall ${p.duration}s linear ${p.delay}s infinite`,
-            ['--drift' as string]: `${p.drift}px`,
+            left: `${m.left}%`,
+            fontSize: '13px',
+            lineHeight: '1',
+            animation: `fall ${m.duration}s linear ${m.delay}s infinite`,
+            ['--drift' as string]: `${m.drift}px`,
           }}
-        />
+        >
+          {m.char}
+        </span>
       ))}
     </div>
   )
