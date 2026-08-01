@@ -22,6 +22,7 @@ export function MusicPlayer() {
     const audio = document.createElement("audio")
     audio.src = TRACK.src
     audio.preload = "auto"
+    audio.muted = true // Começa mutado para permitir autoplay
     audio.autoplay = true
     document.body.appendChild(audio)
     audioRef.current = audio
@@ -31,18 +32,21 @@ export function MusicPlayer() {
     audio.addEventListener("timeupdate", () => setCurrent(audio.currentTime))
     audio.addEventListener("loadedmetadata", () => setDuration(audio.duration))
 
-    // Tenta autoplay imediato; se bloqueado pelo browser, toca no primeiro gesto
-    audio.play().catch(() => {})
-
-    const tryPlay = () => { if (audio.paused) audio.play().catch(() => {}) }
-    window.addEventListener("pointerdown", tryPlay, { once: true })
-    window.addEventListener("keydown", tryPlay, { once: true })
-
-    return () => {
-      window.removeEventListener("pointerdown", tryPlay)
-      window.removeEventListener("keydown", tryPlay)
-      audio.remove()
+    // Assim que começar a tocar (mesmo mutado), remove o mute para ouvir o som
+    const onPlay = () => {
+      setTimeout(() => { audio.muted = false }, 100)
     }
+    audio.addEventListener("play", onPlay, { once: true })
+
+    // Tenta autoplay imediato
+    audio.play().catch(() => {
+      // Fallback se autoplay falhar: toca no primeiro gesto
+      const tryPlay = () => { if (audio.paused) audio.play().catch(() => {}) }
+      window.addEventListener("pointerdown", tryPlay, { once: true })
+      window.addEventListener("keydown", tryPlay, { once: true })
+    })
+
+    return () => { audio.remove() }
   }, [])
 
   function togglePlay() {
