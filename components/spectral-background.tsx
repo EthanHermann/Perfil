@@ -1,18 +1,13 @@
-// Partículas determinísticas — sem mismatch de hidratação.
-const PARTICLES = [
-  { left: 5,  delay: 0,   duration: 11, size: 2, drift:  18 },
-  { left: 12, delay: 2.5, duration: 14, size: 1, drift: -22 },
-  { left: 21, delay: 5,   duration: 9,  size: 2, drift:  12 },
-  { left: 30, delay: 1,   duration: 13, size: 1, drift: -16 },
-  { left: 39, delay: 4,   duration: 10, size: 2, drift:  24 },
-  { left: 48, delay: 7,   duration: 12, size: 1, drift: -10 },
-  { left: 57, delay: 2,   duration: 15, size: 2, drift:  20 },
-  { left: 66, delay: 0.5, duration: 10, size: 1, drift: -28 },
-  { left: 74, delay: 6,   duration: 13, size: 2, drift:  16 },
-  { left: 83, delay: 3.5, duration: 11, size: 1, drift: -14 },
-  { left: 91, delay: 8,   duration: 14, size: 2, drift:  22 },
-  { left: 96, delay: 1.8, duration: 9,  size: 1, drift: -18 },
-]
+// Caracteres hacker caindo (matrix rain)
+const HACKER_CHARS = ['0', '1', 'A', 'B', 'C', 'D', 'E', 'F', 'x', '>', '<', '/', '\\', '|', '!', '@', '#', '$', '%', '^', '&', '*', '+', '-', '=']
+
+const FALLING_CHARS = Array.from({ length: 12 }).map((_, i) => ({
+  char: HACKER_CHARS[Math.floor(Math.random() * HACKER_CHARS.length)],
+  left: (i * 8 + 2) % 100,
+  delay: i * 0.8,
+  duration: 12 + Math.random() * 4,
+  drift: (Math.random() - 0.5) * 30,
+}))
 
 // Texto de código flutuando ao fundo (estilo matrix sutil)
 const CODE_SNIPPETS = [
@@ -65,21 +60,21 @@ export function SpectralBackground() {
         </span>
       ))}
 
-      {/* Partículas caindo */}
-      {PARTICLES.map((p, i) => (
+      {/* Caracteres hacker caindo (matrix rain) */}
+      {FALLING_CHARS.map((c, i) => (
         <span
           key={i}
-          className="absolute top-0 rounded-full"
+          className="absolute top-0 font-mono font-bold text-primary/60 select-none"
           style={{
-            left: `${p.left}%`,
-            width: `${p.size}px`,
-            height: `${p.size}px`,
-            background: 'oklch(0.72 0.22 310 / 0.65)',
-            boxShadow: '0 0 6px 1px oklch(0.65 0.26 295 / 0.5)',
-            animation: `fall ${p.duration}s linear ${p.delay}s infinite`,
-            ['--drift' as string]: `${p.drift}px`,
+            left: `${c.left}%`,
+            fontSize: '14px',
+            lineHeight: '1',
+            animation: `fall ${c.duration}s linear ${c.delay}s infinite`,
+            ['--drift' as string]: `${c.drift}px`,
           }}
-        />
+        >
+          {c.char}
+        </span>
       ))}
     </div>
   )
