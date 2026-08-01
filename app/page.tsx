@@ -11,7 +11,7 @@ import { InstagramIcon, DiscordIcon } from '@/components/brand-icons'
 // ─── Configuração do perfil ───────────────────────────────────────
 const PROFILE = {
   name: 'Ethan Hermann',
-  handle: '@itanbenevidess',
+  handle: '@itanbenevides',
   role: 'dev',
   bio: 'Desenvolvedor · Analista Administrativo',
 }
