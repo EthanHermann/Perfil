@@ -1,55 +1,75 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { Play, Pause, SkipForward, SkipBack, Music } from "lucide-react"
+import { Play, Pause, Volume2, VolumeX } from "lucide-react"
 
 const TRACKS = [
-  { id: 1, title: "Clickbait FT Niink", artist: "Veigh", duration: "1:45", youtube: "XdGmHIZmg4w" },
+  { id: 1, title: "Clickbait FT Niink", artist: "Veigh", duration: "1:45", url: "https://jumpshare.com/s/QlDFZG8ylx9ObSD7cniB" },
 ]
 
 export function MusicPlayer() {
-  const [trackIdx, setTrackIdx] = useState(0)
   const [playing, setPlaying] = useState(false)
-  const [showPlaylist, setShowPlaylist] = useState(false)
+  const [volume, setVolume] = useState(70)
+  const [isMuted, setIsMuted] = useState(false)
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
-  const track = TRACKS[trackIdx]
+  const track = TRACKS[0] // Only one track
 
   useEffect(() => {
     if (!audioRef.current) {
       const audio = document.createElement("audio")
       audio.crossOrigin = "anonymous"
       audio.style.display = "none"
+      // Use our backend endpoint to proxy the audio
+      audio.src = "/api/audio"
+      audio.volume = volume / 100
+      audio.autoplay = true
+      audio.preload = "auto"
       document.body.appendChild(audio)
       audioRef.current = audio
 
       const onPlay = () => setPlaying(true)
       const onPause = () => setPlaying(false)
+      const onEnded = () => setPlaying(false)
 
       audio.addEventListener("play", onPlay)
       audio.addEventListener("pause", onPause)
+      audio.addEventListener("ended", onEnded)
+
+      // Trigger autoplay
+      audio.play().catch(err => console.error("[v0] Autoplay failed:", err))
 
       return () => {
         audio.removeEventListener("play", onPlay)
         audio.removeEventListener("pause", onPause)
+        audio.removeEventListener("ended", onEnded)
       }
     }
   }, [])
 
+  // Update volume when volume state changes
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = isMuted ? 0 : volume / 100
+    }
+  }, [volume, isMuted])
+
   function togglePlay() {
-    setPlaying(!playing)
+    if (!audioRef.current) return
+    if (audioRef.current.paused) {
+      audioRef.current.play().catch(err => console.error("[v0] Play failed:", err))
+    } else {
+      audioRef.current.pause()
+    }
   }
 
-  function prevTrack() {
-    setTrackIdx((i) => (i - 1 + TRACKS.length) % TRACKS.length)
+  function toggleMute() {
+    setIsMuted(!isMuted)
   }
 
-  function nextTrack() {
-    setTrackIdx((i) => (i + 1) % TRACKS.length)
-  }
-
-  function openYouTube() {
-    window.open(`https://www.youtube.com/watch?v=${track.youtube}`, '_blank')
+  function handleVolumeChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setVolume(parseInt(e.target.value))
+    if (isMuted) setIsMuted(false)
   }
 
   return (
@@ -78,17 +98,8 @@ export function MusicPlayer() {
               {track.title}
             </h3>
             
-            {/* Mini controls */}
+            {/* Controls: Play/Pause + Volume */}
             <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={prevTrack}
-                aria-label="Anterior"
-                className="flex size-6 items-center justify-center rounded text-muted-foreground hover:text-primary hover:bg-secondary/40 transition-colors"
-              >
-                <SkipBack className="size-3.5" />
-              </button>
-
               <button
                 type="button"
                 onClick={togglePlay}
@@ -102,60 +113,34 @@ export function MusicPlayer() {
                 )}
               </button>
 
-              <button
-                type="button"
-                onClick={nextTrack}
-                aria-label="Próxima"
-                className="flex size-6 items-center justify-center rounded text-muted-foreground hover:text-primary hover:bg-secondary/40 transition-colors"
-              >
-                <SkipForward className="size-3.5" />
-              </button>
-
-              <button
-                type="button"
-                onClick={openYouTube}
-                title="Abrir no YouTube"
-                className="ml-auto flex size-6 items-center justify-center rounded text-muted-foreground hover:text-red-500 transition-colors"
-              >
-                <span className="text-xs font-bold">▶</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setShowPlaylist(!showPlaylist)}
-                title="Playlist"
-                className="flex size-6 items-center justify-center rounded text-muted-foreground hover:text-primary hover:bg-secondary/40 transition-colors"
-              >
-                <Music className="size-3.5" />
-              </button>
+              {/* Volume control */}
+              <div className="flex items-center gap-1 ml-1">
+                <button
+                  type="button"
+                  onClick={toggleMute}
+                  className="flex size-5 items-center justify-center text-muted-foreground hover:text-primary transition-colors"
+                  title={isMuted ? "Desmutar" : "Mutar"}
+                >
+                  {isMuted ? (
+                    <VolumeX className="size-3.5" />
+                  ) : (
+                    <Volume2 className="size-3.5" />
+                  )}
+                </button>
+                
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={isMuted ? 0 : volume}
+                  onChange={handleVolumeChange}
+                  className="h-1 w-12 rounded bg-secondary cursor-pointer accent-primary"
+                  title="Volume"
+                />
+              </div>
             </div>
           </div>
         </div>
-
-        {/* Playlist dropdown */}
-        {showPlaylist && (
-          <div className="border-t border-border/30 bg-card/50 max-h-48 overflow-y-auto">
-            <div className="divide-y divide-border/20">
-              {TRACKS.map((t, idx) => (
-                <button
-                  key={t.id}
-                  onClick={() => {
-                    setTrackIdx(idx)
-                    setShowPlaylist(false)
-                  }}
-                  className={`w-full px-3 py-2 text-left text-xs transition-colors ${
-                    idx === trackIdx 
-                      ? "bg-primary/15 text-primary font-semibold" 
-                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/30"
-                  }`}
-                >
-                  <span className="font-mono mr-2">{idx + 1}.</span>
-                  {t.title}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   )
