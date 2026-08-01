@@ -19,9 +19,6 @@ export const metadata: Metadata = {
   title: 'Ethan Hermann · dev',
   description:
     'Desenvolvedor. ScreenShare Coordinator. Onde os cheats encontram seu fim.',
-  icons: {
-    icon: '/favicon.png',
-  },
   other: {
     google: 'notranslate',
   },
