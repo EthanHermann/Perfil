@@ -1,189 +1,135 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { Play, Pause, SkipForward, SkipBack, Volume2, VolumeX } from "lucide-react"
+import { SkipBack, SkipForward, Pause, Play } from "lucide-react"
 
-const TRACKS = [
-  { title: "Clickbait FT Niink", artist: "Veigh", src: "/api/audio" },
-]
+const TRACK = {
+  title: "party n get high",
+  src: "https://r2.guns.lol/3b58e56a-20a3-4b0e-a261-b36e91dd963d.mp3",
+  cover: "https://r2.guns.lol/382e6d88-a9c5-4fab-87ea-850da25efb1c.webp",
+}
 
-// Music player com autoplay
+function fmt(s: number) {
+  if (!isFinite(s)) return "0:00"
+  const m = Math.floor(s / 60)
+  const ss = Math.floor(s % 60)
+  return `${m}:${ss.toString().padStart(2, "0")}`
+}
+
 export function MusicPlayer() {
-  const [trackIdx, setTrackIdx] = useState(0)
   const [playing, setPlaying] = useState(false)
-  const [muted, setMuted] = useState(false)
-  const [progress, setProgress] = useState(0)
-  const [volume, setVolume] = useState(70)
-  const [visualBars, setVisualBars] = useState<number[]>(() =>
-    Array.from({ length: 20 }, () => Math.random() * 60 + 10)
-  )
+  const [current, setCurrent] = useState(0)
+  const [duration, setDuration] = useState(0)
   const audioRef = useRef<HTMLAudioElement | null>(null)
-  const progressRef = useRef<HTMLDivElement>(null)
-  const animFrameRef = useRef<number>(0)
-  const barsTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  const track = TRACKS[trackIdx]
-
-  // Animate equalizer bars when playing
   useEffect(() => {
-    if (playing) {
-      barsTimerRef.current = setInterval(() => {
-        setVisualBars(Array.from({ length: 20 }, () => Math.random() * 60 + 10))
-      }, 120)
-    } else {
-      if (barsTimerRef.current) clearInterval(barsTimerRef.current)
-      setVisualBars(Array.from({ length: 20 }, () => 10))
-    }
-    return () => {
-      if (barsTimerRef.current) clearInterval(barsTimerRef.current)
-    }
-  }, [playing])
+    if (audioRef.current) return
 
-  // Criar dedicated audio element com autoplay
-  useEffect(() => {
-    if (!audioRef.current) {
-      const audio = document.createElement("audio")
-      audio.crossOrigin = "anonymous"
-      audio.src = "/api/audio"
-      audio.volume = volume / 100
-      audio.autoplay = true
-      document.body.appendChild(audio)
-      audioRef.current = audio
+    const audio = document.createElement("audio")
+    audio.src = TRACK.src
+    audio.preload = "auto"
+    audio.autoplay = true
+    document.body.appendChild(audio)
+    audioRef.current = audio
 
-      const onPlay = () => setPlaying(true)
-      const onPause = () => setPlaying(false)
-      const onTimeUpdate = () => {
-        if (audio.duration) setProgress(audio.currentTime / audio.duration)
-      }
+    audio.addEventListener("play", () => setPlaying(true))
+    audio.addEventListener("pause", () => setPlaying(false))
+    audio.addEventListener("timeupdate", () => setCurrent(audio.currentTime))
+    audio.addEventListener("loadedmetadata", () => setDuration(audio.duration))
 
-      audio.addEventListener("play", onPlay)
-      audio.addEventListener("pause", onPause)
-      audio.addEventListener("timeupdate", onTimeUpdate)
+    audio.play().catch(() => {})
 
-      // Trigger autoplay
-      audio.play().catch(err => console.error("[v0] Autoplay:", err))
-
-      return () => {
-        audio.removeEventListener("play", onPlay)
-        audio.removeEventListener("pause", onPause)
-        audio.removeEventListener("timeupdate", onTimeUpdate)
-      }
-    }
+    return () => { audio.remove() }
   }, [])
 
-  // Update volume
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume / 100
-    }
-  }, [volume])
-
   function togglePlay() {
-    const audio = audioRef.current
-    if (!audio) return
-    if (audio.paused) {
-      audio.play().catch(() => {})
-    } else {
-      audio.pause()
-    }
+    const a = audioRef.current
+    if (!a) return
+    a.paused ? a.play() : a.pause()
   }
 
-  function toggleMute() {
-    const audio = audioRef.current
-    if (!audio) return
-    audio.muted = !audio.muted
-    setMuted(audio.muted)
-  }
-
-  function prevTrack() {
-    setTrackIdx((i) => (i - 1 + TRACKS.length) % TRACKS.length)
-  }
-
-  function nextTrack() {
-    setTrackIdx((i) => (i + 1) % TRACKS.length)
-  }
-
-  function handleProgressClick(e: React.MouseEvent<HTMLDivElement>) {
+  function seek(e: React.MouseEvent<HTMLDivElement>) {
+    const a = audioRef.current
+    if (!a || !a.duration) return
     const rect = e.currentTarget.getBoundingClientRect()
-    const ratio = (e.clientX - rect.left) / rect.width
-    const audio = audioRef.current
-    if (audio && audio.duration) {
-      audio.currentTime = ratio * audio.duration
-    }
-    setProgress(ratio)
+    a.currentTime = ((e.clientX - rect.left) / rect.width) * a.duration
   }
+
+  function skip(delta: number) {
+    const a = audioRef.current
+    if (!a) return
+    a.currentTime = Math.max(0, Math.min(a.duration || 0, a.currentTime + delta))
+  }
+
+  const progress = duration ? current / duration : 0
 
   return (
-    <div className="w-full rounded-xl border border-border bg-card/50 px-4 py-3 backdrop-blur-md">
-      {/* Equalizer bars */}
-      <div className="mb-3 flex items-end justify-center gap-[2px] h-8" aria-hidden="true">
-        {visualBars.map((h, i) => (
-          <span
-            key={i}
-            className="w-[3px] rounded-sm bg-primary/70 transition-all duration-100"
-            style={{ height: `${h}%` }}
-          />
-        ))}
-      </div>
+    <div className="flex items-center gap-3 rounded-xl bg-black/60 border border-white/8 px-3 py-2.5 backdrop-blur-md w-full">
+      {/* Album cover */}
+      <img
+        src={TRACK.cover}
+        alt="album cover"
+        className="size-10 rounded-md object-cover shrink-0"
+      />
 
-      {/* Track info */}
-      <div className="mb-2 text-center">
-        <p className="font-mono text-xs font-semibold tracking-widest text-primary uppercase">
-          {track.artist}
-        </p>
-        <p className="font-sans text-[13px] font-medium text-foreground/90 truncate">
-          {track.title}
-        </p>
-      </div>
+      {/* Middle: title + time + progress */}
+      <div className="flex flex-col gap-1 min-w-0 flex-1">
+        <span className="text-[13px] font-medium text-white/90 truncate leading-none">
+          {TRACK.title}
+        </span>
 
-      {/* Progress bar */}
-      <div
-        role="progressbar"
-        aria-valuenow={Math.round(progress * 100)}
-        aria-valuemin={0}
-        aria-valuemax={100}
-        className="mb-3 h-1 w-full cursor-pointer rounded-full bg-muted overflow-hidden"
-        onClick={handleProgressClick}
-        ref={progressRef}
-      >
-        <div
-          className="h-full rounded-full bg-primary transition-all duration-200"
-          style={{ width: `${progress * 100}%` }}
-        />
+        <div className="flex items-center gap-2">
+          <span className="font-mono text-[11px] text-white/40 w-7 shrink-0">
+            {fmt(current)}
+          </span>
+
+          {/* Progress bar */}
+          <div
+            className="relative h-[3px] flex-1 rounded-full bg-white/15 cursor-pointer group"
+            onClick={seek}
+          >
+            <div
+              className="absolute left-0 top-0 h-full rounded-full bg-white/70 group-hover:bg-white transition-colors"
+              style={{ width: `${progress * 100}%` }}
+            />
+          </div>
+
+          <span className="font-mono text-[11px] text-white/40 w-7 shrink-0 text-right">
+            {fmt(duration)}
+          </span>
+        </div>
       </div>
 
       {/* Controls */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 flex-1">
-          <button
-            type="button"
-            onClick={toggleMute}
-            aria-label={muted ? "Ativar som" : "Mutar"}
-            className="flex size-7 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-primary"
-          >
-            {muted ? <VolumeX className="size-4" /> : <Volume2 className="size-4" />}
-          </button>
-          <input
-            type="range"
-            min="0"
-            max="100"
-            value={volume}
-            onChange={(e) => setVolume(Number(e.target.value))}
-            className="h-1 flex-1 rounded-full bg-muted cursor-pointer accent-primary"
-            aria-label="Volume"
-          />
-          <span className="font-mono text-[10px] text-muted-foreground w-6 text-right">
-            {volume}%
-          </span>
-        </div>
+      <div className="flex items-center gap-1 shrink-0">
+        <button
+          type="button"
+          onClick={() => skip(-10)}
+          aria-label="Voltar 10s"
+          className="flex size-7 items-center justify-center text-white/50 hover:text-white transition-colors"
+        >
+          <SkipBack className="size-3.5" />
+        </button>
 
         <button
           type="button"
           onClick={togglePlay}
           aria-label={playing ? "Pausar" : "Reproduzir"}
-          className="mx-3 flex size-9 items-center justify-center rounded-xl border border-primary/50 bg-primary/20 text-primary shadow-[0_0_16px_-4px_oklch(0.65_0.26_295/0.7)] transition-all hover:bg-primary/30 hover:shadow-[0_0_24px_-2px_oklch(0.65_0.26_295/0.9)]"
+          className="flex size-7 items-center justify-center text-white/80 hover:text-white transition-colors"
         >
-          {playing ? <Pause className="size-4" /> : <Play className="size-4 translate-x-px" />}
+          {playing
+            ? <Pause className="size-3.5 fill-current" />
+            : <Play className="size-3.5 fill-current translate-x-px" />
+          }
+        </button>
+
+        <button
+          type="button"
+          onClick={() => skip(10)}
+          aria-label="Avançar 10s"
+          className="flex size-7 items-center justify-center text-white/50 hover:text-white transition-colors"
+        >
+          <SkipForward className="size-3.5" />
         </button>
       </div>
     </div>
