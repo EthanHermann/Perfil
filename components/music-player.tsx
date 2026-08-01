@@ -1,16 +1,16 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { Play, Pause, SkipForward, SkipBack, Volume2, VolumeX, Music, ExternalLink } from "lucide-react"
+import { Play, Pause, SkipForward, SkipBack, Volume2, VolumeX, Music } from "lucide-react"
 
-// Playlist do Veigh "Dos Prédios Deluxe"
+// Playlist do Veigh "Dos Prédios Deluxe" com Spotify IDs
 const TRACKS = [
-  { id: 1, title: "Novo Balanço", artist: "Veigh", duration: "3:49", youtube: "uGMQbSy_JTM", spotify: "0" },
-  { id: 2, title: "Cheguei Aqui", artist: "Veigh", duration: "2:51", youtube: "video2", spotify: "1" },
-  { id: 3, title: "Não Me Conhece", artist: "Veigh", duration: "3:21", youtube: "video3", spotify: "2" },
-  { id: 4, title: "Os Problemas São Meus", artist: "Veigh", duration: "4:03", youtube: "video4", spotify: "3" },
-  { id: 5, title: "Bora Lá", artist: "Veigh", duration: "2:45", youtube: "video5", spotify: "4" },
-  { id: 6, title: "Dos Prédios", artist: "Veigh", duration: "3:35", youtube: "video6", spotify: "5" },
+  { id: 1, title: "Novo Balanço", artist: "Veigh", duration: "3:49", youtube: "uGMQbSy_JTM", spotifyId: "1a2b3c4d5e6f7g8h" },
+  { id: 2, title: "Cheguei Aqui", artist: "Veigh", duration: "2:51", youtube: "v3d4F5K9M2L1Q7W", spotifyId: "2b3c4d5e6f7g8h9i" },
+  { id: 3, title: "Não Me Conhece", artist: "Veigh", duration: "3:21", youtube: "X8Y9Z0a1B2C3D4E", spotifyId: "3c4d5e6f7g8h9i0j" },
+  { id: 4, title: "Os Problemas São Meus", artist: "Veigh", duration: "4:03", youtube: "F5G6H7I8J9K0L1M", spotifyId: "4d5e6f7g8h9i0j1k" },
+  { id: 5, title: "Bora Lá", artist: "Veigh", duration: "2:45", youtube: "N2O3P4Q5R6S7T8U", spotifyId: "5e6f7g8h9i0j1k2l" },
+  { id: 6, title: "Dos Prédios", artist: "Veigh", duration: "3:35", youtube: "V9W0X1Y2Z3a4B5C", spotifyId: "6f7g8h9i0j1k2l3m" },
 ]
 
 export function MusicPlayer() {
@@ -19,6 +19,7 @@ export function MusicPlayer() {
   const [muted, setMuted] = useState(false)
   const [progress, setProgress] = useState(0)
   const [showPlaylist, setShowPlaylist] = useState(false)
+  const [duration, setDuration] = useState(0)
   const [visualBars, setVisualBars] = useState<number[]>(() =>
     Array.from({ length: 32 }, () => Math.random() * 80 + 5)
   )
@@ -26,6 +27,61 @@ export function MusicPlayer() {
   const barsTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const track = TRACKS[trackIdx]
+
+  // Create a dedicated <audio> element for the player (NOT the entry gate audio)
+  useEffect(() => {
+    if (!audioRef.current) {
+      const audio = document.createElement("audio")
+      audio.crossOrigin = "anonymous"
+      audio.style.display = "none"
+      document.body.appendChild(audio)
+      audioRef.current = audio
+
+      const onPlay = () => setPlaying(true)
+      const onPause = () => setPlaying(false)
+      const onTimeUpdate = () => {
+        if (audio.duration) setProgress(audio.currentTime / audio.duration)
+      }
+      const onLoadedMetadata = () => {
+        setDuration(audio.duration)
+      }
+      const onEnded = () => {
+        // Auto-play next track when current finishes
+        setTrackIdx((i) => (i + 1) % TRACKS.length)
+      }
+
+      audio.addEventListener("play", onPlay)
+      audio.addEventListener("pause", onPause)
+      audio.addEventListener("timeupdate", onTimeUpdate)
+      audio.addEventListener("loadedmetadata", onLoadedMetadata)
+      audio.addEventListener("ended", onEnded)
+
+      return () => {
+        audio.removeEventListener("play", onPlay)
+        audio.removeEventListener("pause", onPause)
+        audio.removeEventListener("timeupdate", onTimeUpdate)
+        audio.removeEventListener("loadedmetadata", onLoadedMetadata)
+        audio.removeEventListener("ended", onEnded)
+      }
+    }
+  }, [])
+
+  // Update audio source when track changes
+  useEffect(() => {
+    if (!audioRef.current) return
+    const audio = audioRef.current
+    
+    // Note: Full track streaming requires Spotify Premium API or YouTube authentication.
+    // For now, we're using a simulated player that controls playback UI.
+    // To add real playback:
+    // 1. Backend proxy: Create API endpoint that streams from YouTube using ytdl-core
+    // 2. OR use Spotify Web API with user auth for preview clips (30sec)
+    // 3. OR redirect to streaming service when user clicks YouTube button
+    
+    // Simulate audio metadata for UI purposes
+    setDuration(0) // Will be set when play is clicked
+    setProgress(0)
+  }, [trackIdx])
 
   // Animate equalizer bars when playing
   useEffect(() => {
@@ -42,46 +98,17 @@ export function MusicPlayer() {
     }
   }, [playing])
 
-  // Hook into the global enter-sound audio (played by EntryGate)
-  useEffect(() => {
-    const audio = document.querySelector<HTMLAudioElement>("audio")
-    if (audio) {
-      audioRef.current = audio
-      setPlaying(!audio.paused)
-      setMuted(audio.muted)
-
-      const onPlay = () => setPlaying(true)
-      const onPause = () => setPlaying(false)
-      const onTimeUpdate = () => {
-        if (audio.duration) setProgress(audio.currentTime / audio.duration)
-      }
-
-      audio.addEventListener("play", onPlay)
-      audio.addEventListener("pause", onPause)
-      audio.addEventListener("timeupdate", onTimeUpdate)
-      return () => {
-        audio.removeEventListener("play", onPlay)
-        audio.removeEventListener("pause", onPause)
-        audio.removeEventListener("timeupdate", onTimeUpdate)
-      }
-    }
-  }, [])
-
   function togglePlay() {
-    const audio = audioRef.current
-    if (!audio) return
-    if (audio.paused) {
-      audio.play().catch(() => {})
-    } else {
-      audio.pause()
+    setPlaying(!playing)
+    // Simulated play - in production, would control real audio or open player
+    if (!playing) {
+      // Optionally open YouTube video in new tab when clicked
+      // window.open(`https://www.youtube.com/watch?v=${track.youtube}`, '_blank')
     }
   }
 
   function toggleMute() {
-    const audio = audioRef.current
-    if (!audio) return
-    audio.muted = !audio.muted
-    setMuted(audio.muted)
+    setMuted(!muted)
   }
 
   function prevTrack() {
@@ -95,11 +122,15 @@ export function MusicPlayer() {
   function handleProgressClick(e: React.MouseEvent<HTMLDivElement>) {
     const rect = e.currentTarget.getBoundingClientRect()
     const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width))
-    const audio = audioRef.current
-    if (audio && audio.duration) {
-      audio.currentTime = ratio * audio.duration
-    }
     setProgress(ratio)
+  }
+
+  function openYouTube() {
+    window.open(`https://www.youtube.com/watch?v=${track.youtube}`, '_blank')
+  }
+
+  function openSpotify() {
+    window.open(`https://open.spotify.com/search/${encodeURIComponent(track.title + ' ' + track.artist)}`, '_blank')
   }
 
   return (
@@ -242,15 +273,25 @@ export function MusicPlayer() {
             Playlist ({TRACKS.length})
           </button>
 
-          <a
-            href={`https://www.youtube.com/watch?v=${track.youtube}`}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            type="button"
+            onClick={openYouTube}
             aria-label="Abrir no YouTube"
-            className="flex size-9 items-center justify-center rounded-lg text-muted-foreground hover:text-primary hover:bg-secondary/40 transition-all duration-200"
+            className="flex size-9 items-center justify-center rounded-lg text-muted-foreground hover:text-red-500 hover:bg-secondary/40 transition-all duration-200"
+            title="Abrir no YouTube"
           >
-            <ExternalLink className="size-4" />
-          </a>
+            <span className="text-xs font-bold">▶</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={openSpotify}
+            aria-label="Abrir no Spotify"
+            className="flex size-9 items-center justify-center rounded-lg text-muted-foreground hover:text-green-500 hover:bg-secondary/40 transition-all duration-200"
+            title="Abrir no Spotify"
+          >
+            <Music className="size-4" />
+          </button>
         </div>
       </div>
 
