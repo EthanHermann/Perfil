@@ -31,9 +31,18 @@ export function MusicPlayer() {
     audio.addEventListener("timeupdate", () => setCurrent(audio.currentTime))
     audio.addEventListener("loadedmetadata", () => setDuration(audio.duration))
 
+    // Tenta autoplay imediato; se bloqueado pelo browser, toca no primeiro gesto
     audio.play().catch(() => {})
 
-    return () => { audio.remove() }
+    const tryPlay = () => { if (audio.paused) audio.play().catch(() => {}) }
+    window.addEventListener("pointerdown", tryPlay, { once: true })
+    window.addEventListener("keydown", tryPlay, { once: true })
+
+    return () => {
+      window.removeEventListener("pointerdown", tryPlay)
+      window.removeEventListener("keydown", tryPlay)
+      audio.remove()
+    }
   }, [])
 
   function togglePlay() {

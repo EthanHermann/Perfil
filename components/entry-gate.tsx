@@ -1,62 +1,11 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { GhostRain } from "@/components/ghost-rain"
 
 export function EntryGate() {
   const [entered, setEntered] = useState(false)
   const [removed, setRemoved] = useState(false)
-  const audioRef = useRef<HTMLAudioElement | null>(null)
-  // Garante que o "pulo" para os 2s só aconteça na primeira reprodução,
-  // sem interferir no loop (que deve reiniciar normalmente do começo).
-  const startedRef = useRef(false)
-
-  // A single, persistent <audio> element lives for the whole lifetime of this
-  // component (see the render below). We try to start it as soon as the site
-  // opens; browsers usually block autoplay with sound, so we also (re)start it
-  // on any user interaction. Because the element is never unmounted, playback
-  // is not interrupted when the entry gate is removed from the DOM.
-  useEffect(() => {
-    const audio = audioRef.current
-    if (!audio) return
-    audio.volume = 0.7
-    // Deixa o áudio pré-posicionado no segundo 2 já ao carregar, assim que os
-    // metadados estiverem disponíveis. Quando o play for liberado (autoplay ou
-    // clique), ele já começa daquele ponto — sem "pulo" visível.
-    const seekToTwo = () => {
-      try {
-        if (audio.currentTime < 2) audio.currentTime = 2
-      } catch {
-        /* ignore */
-      }
-    }
-    if (audio.readyState >= 1) seekToTwo()
-    else audio.addEventListener("loadedmetadata", seekToTwo, { once: true })
-
-    const tryPlay = () => {
-      if (!startedRef.current) {
-        startedRef.current = true
-        seekToTwo()
-      }
-      audio.play().catch(() => {})
-    }
-
-    // Tenta tocar imediatamente (funciona quando o navegador permite autoplay).
-    tryPlay()
-
-    // Fallback obrigatório: navegadores bloqueiam som antes de um gesto, então
-    // retomamos no primeiro toque/clique/tecla. No-op barato se já tocando.
-    window.addEventListener("pointerdown", tryPlay)
-    window.addEventListener("keydown", tryPlay)
-    window.addEventListener("touchstart", tryPlay)
-
-    return () => {
-      audio.removeEventListener("loadedmetadata", seekToTwo)
-      window.removeEventListener("pointerdown", tryPlay)
-      window.removeEventListener("keydown", tryPlay)
-      window.removeEventListener("touchstart", tryPlay)
-    }
-  }, [])
 
   // Lock scroll while the gate is visible.
   useEffect(() => {
@@ -71,26 +20,11 @@ export function EntryGate() {
   function handleEnter() {
     if (entered) return
     setEntered(true)
-    const audio = audioRef.current
-    if (audio) {
-      // O clique é um gesto válido: garante o início EXATO no segundo 2.
-      startedRef.current = true
-      try {
-        if (audio.currentTime < 2) audio.currentTime = 2
-      } catch {
-        /* ignore */
-      }
-      audio.play().catch(() => {})
-    }
-    // Fade out, then remove the overlay from the DOM. The <audio> element is
-    // rendered outside the overlay, so it keeps playing.
     window.setTimeout(() => setRemoved(true), 900)
   }
 
   return (
     <>
-      {/* Persistent audio — never unmounted, so the music never gets cut off. */}
-      <audio ref={audioRef} src="/enter-sound.mp3" preload="auto" loop />
 
       {!removed && (
         <button
