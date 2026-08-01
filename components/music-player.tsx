@@ -1,36 +1,51 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { Play, Pause, SkipForward, SkipBack, Volume2, VolumeX, Music } from "lucide-react"
+import { Play, Pause, SkipForward, SkipBack, Volume2, VolumeX } from "lucide-react"
 
-// Playlist do Veigh "Dos Prédios Deluxe"
 const TRACKS = [
-  { id: 1, title: "Clickbait FT Niink", artist: "Veigh", duration: "1:45", youtube: "XdGmHIZmg4w", spotifyId: "clickbait_niink" },
+  { title: "Clickbait FT Niink", artist: "Veigh", src: "/api/audio" },
 ]
 
+// Music player com autoplay
 export function MusicPlayer() {
   const [trackIdx, setTrackIdx] = useState(0)
   const [playing, setPlaying] = useState(false)
   const [muted, setMuted] = useState(false)
   const [progress, setProgress] = useState(0)
-  const [showPlaylist, setShowPlaylist] = useState(false)
-  const [duration, setDuration] = useState(0)
+  const [volume, setVolume] = useState(70)
   const [visualBars, setVisualBars] = useState<number[]>(() =>
-    Array.from({ length: 32 }, () => Math.random() * 80 + 5)
+    Array.from({ length: 20 }, () => Math.random() * 60 + 10)
   )
   const audioRef = useRef<HTMLAudioElement | null>(null)
+  const progressRef = useRef<HTMLDivElement>(null)
+  const animFrameRef = useRef<number>(0)
   const barsTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const track = TRACKS[trackIdx]
 
-  // Create a dedicated <audio> element for the player (NOT the entry gate audio)
+  // Animate equalizer bars when playing
+  useEffect(() => {
+    if (playing) {
+      barsTimerRef.current = setInterval(() => {
+        setVisualBars(Array.from({ length: 20 }, () => Math.random() * 60 + 10))
+      }, 120)
+    } else {
+      if (barsTimerRef.current) clearInterval(barsTimerRef.current)
+      setVisualBars(Array.from({ length: 20 }, () => 10))
+    }
+    return () => {
+      if (barsTimerRef.current) clearInterval(barsTimerRef.current)
+    }
+  }, [playing])
+
+  // Criar dedicated audio element com autoplay
   useEffect(() => {
     if (!audioRef.current) {
       const audio = document.createElement("audio")
       audio.crossOrigin = "anonymous"
-      audio.style.display = "none"
       audio.src = "/api/audio"
-      audio.volume = 0.7
+      audio.volume = volume / 100
       audio.autoplay = true
       document.body.appendChild(audio)
       audioRef.current = audio
@@ -40,19 +55,10 @@ export function MusicPlayer() {
       const onTimeUpdate = () => {
         if (audio.duration) setProgress(audio.currentTime / audio.duration)
       }
-      const onLoadedMetadata = () => {
-        setDuration(audio.duration)
-      }
-      const onEnded = () => {
-        // Auto-play next track when current finishes
-        setTrackIdx((i) => (i + 1) % TRACKS.length)
-      }
 
       audio.addEventListener("play", onPlay)
       audio.addEventListener("pause", onPause)
       audio.addEventListener("timeupdate", onTimeUpdate)
-      audio.addEventListener("loadedmetadata", onLoadedMetadata)
-      audio.addEventListener("ended", onEnded)
 
       // Trigger autoplay
       audio.play().catch(err => console.error("[v0] Autoplay:", err))
@@ -61,55 +67,32 @@ export function MusicPlayer() {
         audio.removeEventListener("play", onPlay)
         audio.removeEventListener("pause", onPause)
         audio.removeEventListener("timeupdate", onTimeUpdate)
-        audio.removeEventListener("loadedmetadata", onLoadedMetadata)
-        audio.removeEventListener("ended", onEnded)
       }
     }
   }, [])
 
-  // Update audio source when track changes
+  // Update volume
   useEffect(() => {
-    if (!audioRef.current) return
-    const audio = audioRef.current
-    
-    // Note: Full track streaming requires Spotify Premium API or YouTube authentication.
-    // For now, we're using a simulated player that controls playback UI.
-    // To add real playback:
-    // 1. Backend proxy: Create API endpoint that streams from YouTube using ytdl-core
-    // 2. OR use Spotify Web API with user auth for preview clips (30sec)
-    // 3. OR redirect to streaming service when user clicks YouTube button
-    
-    // Simulate audio metadata for UI purposes
-    setDuration(0) // Will be set when play is clicked
-    setProgress(0)
-  }, [trackIdx])
-
-  // Animate equalizer bars when playing
-  useEffect(() => {
-    if (playing) {
-      barsTimerRef.current = setInterval(() => {
-        setVisualBars(Array.from({ length: 32 }, () => Math.random() * 80 + 5))
-      }, 100)
-    } else {
-      if (barsTimerRef.current) clearInterval(barsTimerRef.current)
-      setVisualBars(Array.from({ length: 32 }, () => 5))
+    if (audioRef.current) {
+      audioRef.current.volume = volume / 100
     }
-    return () => {
-      if (barsTimerRef.current) clearInterval(barsTimerRef.current)
-    }
-  }, [playing])
+  }, [volume])
 
   function togglePlay() {
-    setPlaying(!playing)
-    // Simulated play - in production, would control real audio or open player
-    if (!playing) {
-      // Optionally open YouTube video in new tab when clicked
-      // window.open(`https://www.youtube.com/watch?v=${track.youtube}`, '_blank')
+    const audio = audioRef.current
+    if (!audio) return
+    if (audio.paused) {
+      audio.play().catch(() => {})
+    } else {
+      audio.pause()
     }
   }
 
   function toggleMute() {
-    setMuted(!muted)
+    const audio = audioRef.current
+    if (!audio) return
+    audio.muted = !audio.muted
+    setMuted(audio.muted)
   }
 
   function prevTrack() {
@@ -122,159 +105,87 @@ export function MusicPlayer() {
 
   function handleProgressClick(e: React.MouseEvent<HTMLDivElement>) {
     const rect = e.currentTarget.getBoundingClientRect()
-    const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width))
+    const ratio = (e.clientX - rect.left) / rect.width
+    const audio = audioRef.current
+    if (audio && audio.duration) {
+      audio.currentTime = ratio * audio.duration
+    }
     setProgress(ratio)
   }
 
-  function openYouTube() {
-    window.open(`https://www.youtube.com/watch?v=${track.youtube}`, '_blank')
-  }
-
-  function openSpotify() {
-    window.open(`https://open.spotify.com/search/${encodeURIComponent(track.title + ' ' + track.artist)}`, '_blank')
-  }
-
   return (
-    <div className="w-full max-w-md mx-auto">
-      {/* Main player card */}
-      <div className="rounded-2xl border border-border bg-gradient-to-br from-card/80 via-card/60 to-card/40 backdrop-blur-xl overflow-hidden shadow-2xl">
-        {/* Album art area with animated equalizer overlay */}
-        <div className="relative aspect-square bg-gradient-to-br from-primary/20 to-primary/5 border-b border-border/50 overflow-hidden">
-          {/* Animated background gradient */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,oklch(0.62_0.24_295/0.2),transparent_70%)]" />
-          
-          {/* Large music icon as album placeholder */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <Music className="size-24 text-primary/30" strokeWidth={1} />
-          </div>
+    <div className="w-full rounded-xl border border-border bg-card/50 px-4 py-3 backdrop-blur-md">
+      {/* Equalizer bars */}
+      <div className="mb-3 flex items-end justify-center gap-[2px] h-8" aria-hidden="true">
+        {visualBars.map((h, i) => (
+          <span
+            key={i}
+            className="w-[3px] rounded-sm bg-primary/70 transition-all duration-100"
+            style={{ height: `${h}%` }}
+          />
+        ))}
+      </div>
 
-          {/* Equalizer bars as overlay */}
-          <div className="absolute inset-0 flex items-end justify-center gap-1 p-6" aria-hidden="true">
-            {visualBars.map((h, i) => (
-              <div
-                key={i}
-                className="w-1 rounded-full bg-gradient-to-t from-primary to-primary/40 transition-all duration-75"
-                style={{ 
-                  height: `${h}%`,
-                  opacity: playing ? 0.8 : 0.3
-                }}
-              />
-            ))}
-          </div>
+      {/* Track info */}
+      <div className="mb-2 text-center">
+        <p className="font-mono text-xs font-semibold tracking-widest text-primary uppercase">
+          {track.artist}
+        </p>
+        <p className="font-sans text-[13px] font-medium text-foreground/90 truncate">
+          {track.title}
+        </p>
+      </div>
 
-          {/* Track artist label - top */}
-          <div className="absolute top-4 left-4 right-4">
-            <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold tracking-widest uppercase bg-primary/20 border border-primary/30 text-primary">
-              {track.artist}
-            </span>
-          </div>
+      {/* Progress bar */}
+      <div
+        role="progressbar"
+        aria-valuenow={Math.round(progress * 100)}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        className="mb-3 h-1 w-full cursor-pointer rounded-full bg-muted overflow-hidden"
+        onClick={handleProgressClick}
+        ref={progressRef}
+      >
+        <div
+          className="h-full rounded-full bg-primary transition-all duration-200"
+          style={{ width: `${progress * 100}%` }}
+        />
+      </div>
 
-          {/* Playing indicator - top right */}
-          {playing && (
-            <div className="absolute top-4 right-4 flex items-center gap-1 px-2 py-1 rounded-full bg-primary/20 border border-primary/30">
-              <span className="text-[10px] font-semibold uppercase tracking-widest text-primary">Now</span>
-              <div className="flex gap-[2px]">
-                {[0, 1, 2].map((i) => (
-                  <span
-                    key={i}
-                    className="w-1 h-3 bg-primary/70 rounded-sm animate-pulse"
-                    style={{ animationDelay: `${i * 100}ms` }}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Track info */}
-        <div className="px-6 py-4 border-b border-border/30">
-          <p className="font-mono text-[11px] font-semibold tracking-widest text-primary/60 uppercase mb-1">
-            Faixa {trackIdx + 1} de {TRACKS.length}
-          </p>
-          <h2 className="text-lg font-bold text-foreground mb-1 line-clamp-2">
-            {track.title}
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            {track.artist} • {track.duration}
-          </p>
-        </div>
-
-        {/* Progress bar - larger */}
-        <div className="px-6 pt-4">
-          <div
-            role="progressbar"
-            aria-valuenow={Math.round(progress * 100)}
-            aria-valuemin={0}
-            aria-valuemax={100}
-            className="h-2 w-full cursor-pointer rounded-full bg-muted/30 overflow-hidden mb-1"
-            onClick={handleProgressClick}
-          >
-            <div
-              className="h-full rounded-full bg-gradient-to-r from-primary via-primary to-primary/60 transition-all duration-200"
-              style={{ width: `${progress * 100}%` }}
-            />
-          </div>
-          <div className="flex justify-between text-[10px] text-muted-foreground font-mono px-1">
-            <span>0:00</span>
-            <span>{track.duration}</span>
-          </div>
-        </div>
-
-        {/* Main controls */}
-        <div className="px-6 py-6 border-b border-border/30 flex items-center justify-center gap-4">
-          <button
-            type="button"
-            onClick={togglePlay}
-            aria-label={playing ? "Pausar" : "Reproduzir"}
-            className="flex size-16 items-center justify-center rounded-full border-2 border-primary bg-primary/20 text-primary shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 hover:bg-primary/30 transition-all duration-200 active:scale-95"
-          >
-            {playing ? (
-              <Pause className="size-6 fill-primary" />
-            ) : (
-              <Play className="size-6 fill-primary translate-x-0.5" />
-            )}
-          </button>
-        </div>
-
-        {/* Secondary controls */}
-        <div className="px-6 py-4 flex items-center justify-center gap-2">
+      {/* Controls */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2 flex-1">
           <button
             type="button"
             onClick={toggleMute}
             aria-label={muted ? "Ativar som" : "Mutar"}
-            className="flex size-9 items-center justify-center rounded-lg text-muted-foreground hover:text-primary hover:bg-secondary/40 transition-all duration-200"
+            className="flex size-7 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-primary"
           >
             {muted ? <VolumeX className="size-4" /> : <Volume2 className="size-4" />}
           </button>
-
-          <button
-            type="button"
-            onClick={openYouTube}
-            aria-label="Abrir no YouTube"
-            className="flex size-9 items-center justify-center rounded-lg text-muted-foreground hover:text-red-500 hover:bg-secondary/40 transition-all duration-200"
-            title="Abrir no YouTube"
-          >
-            <span className="text-xs font-bold">▶</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={openSpotify}
-            aria-label="Abrir no Spotify"
-            className="flex size-9 items-center justify-center rounded-lg text-muted-foreground hover:text-green-500 hover:bg-secondary/40 transition-all duration-200"
-            title="Abrir no Spotify"
-          >
-            <Music className="size-4" />
-          </button>
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value={volume}
+            onChange={(e) => setVolume(Number(e.target.value))}
+            className="h-1 flex-1 rounded-full bg-muted cursor-pointer accent-primary"
+            aria-label="Volume"
+          />
+          <span className="font-mono text-[10px] text-muted-foreground w-6 text-right">
+            {volume}%
+          </span>
         </div>
+
+        <button
+          type="button"
+          onClick={togglePlay}
+          aria-label={playing ? "Pausar" : "Reproduzir"}
+          className="mx-3 flex size-9 items-center justify-center rounded-xl border border-primary/50 bg-primary/20 text-primary shadow-[0_0_16px_-4px_oklch(0.65_0.26_295/0.7)] transition-all hover:bg-primary/30 hover:shadow-[0_0_24px_-2px_oklch(0.65_0.26_295/0.9)]"
+        >
+          {playing ? <Pause className="size-4" /> : <Play className="size-4 translate-x-px" />}
+        </button>
       </div>
-
-
-
-      {/* Credits */}
-      <p className="text-center text-xs text-muted-foreground/60 mt-4">
-        Playlist: Veigh - Dos Prédios Deluxe
-      </p>
     </div>
   )
 }
