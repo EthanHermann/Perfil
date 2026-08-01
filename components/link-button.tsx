@@ -1,11 +1,11 @@
 import type { ReactNode } from 'react'
-import { ArrowUpRight } from 'lucide-react'
+import { ArrowUpRight, Package } from 'lucide-react'
 
 type LinkButtonProps = {
   href: string
   label: string
   sublabel?: string
-  icon: ReactNode
+  icon?: ReactNode | null
 }
 
 export function LinkButton({ href, label, sublabel, icon }: LinkButtonProps) {
@@ -29,7 +29,7 @@ export function LinkButton({ href, label, sublabel, icon }: LinkButtonProps) {
 
       {/* Ícone */}
       <span className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-border bg-secondary/50 text-primary transition-all duration-300 group-hover:border-primary/50 group-hover:shadow-[0_0_12px_-2px_oklch(0.65_0.26_295/0.5)]">
-        {icon}
+        {icon ?? <Package className="size-5" />}
       </span>
 
       {/* Textos */}

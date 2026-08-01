@@ -1,22 +1,22 @@
-import { pool } from "@/lib/db"
+import { query } from "@/lib/db"
 
 export const dynamic = "force-dynamic"
 
-// A contagem NUNCA fica abaixo deste valor. O site "começa" em 1027 e cada
+// A contagem NUNCA fica abaixo deste valor. O site "começa" em 1227 e cada
 // novo acesso soma +1 a partir daí. Usamos GREATEST no banco para garantir o
 // piso mesmo que o valor armazenado esteja abaixo (ex.: acessos de teste).
-const BASE_VIEWS = 1027
+const BASE_VIEWS = 1227
 
 export async function GET() {
-  const { rows } = await pool.query("SELECT count FROM page_views WHERE id = 1")
+  const { rows } = await query("SELECT count FROM page_views WHERE id = 1")
   const count = Math.max(Number(rows[0]?.count ?? 0), BASE_VIEWS)
   return Response.json({ count })
 }
 
 export async function POST() {
   // GREATEST(count, BASE_VIEWS) eleva o valor ao piso antes de incrementar,
-  // então o primeiro acesso real já exibe 1028 e assim por diante.
-  const { rows } = await pool.query(
+  // então o primeiro acesso real já exibe 1228 (1227 + 1) e assim por diante.
+  const { rows } = await query(
     "UPDATE page_views SET count = GREATEST(count, $1) + 1 WHERE id = 1 RETURNING count",
     [BASE_VIEWS],
   )

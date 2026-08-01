@@ -6,14 +6,14 @@ import { EntryGate } from '@/components/entry-gate'
 import { ViewCounter } from '@/components/view-counter'
 import { FitToScreen } from '@/components/fit-to-screen'
 import { MusicPlayer } from '@/components/music-player'
-import { InstagramIcon, DiscordIcon, FiveMIcon } from '@/components/brand-icons'
+import { InstagramIcon, DiscordIcon } from '@/components/brand-icons'
 
 // ─── Configuração do perfil ───────────────────────────────────────
 const PROFILE = {
   name: 'Ethan Hermann',
   handle: '@itanbenevidess',
   role: 'dev',
-  bio: 'Coor. ScreenShare · Analista Administrativo',
+  bio: 'Desenvolvedor · Analista Administrativo',
 }
 
 const LINKS = [
@@ -25,17 +25,22 @@ const LINKS = [
   },
   {
     label: 'Discord',
-    sublabel: 'Ethan Hermann · SS',
+    sublabel: 'Ethan Hermann',
     href: 'https://discord.com/users/369812409768083466',
     icon: <DiscordIcon className="size-5" />,
+  },
+  {
+    label: 'Nyvo',
+    sublabel: 'nyvo.lol',
+    href: 'https://nyvo.lol',
+    icon: null,
   },
 ]
 
 const TAGS = [
   { icon: Terminal, label: 'Dev' },
-  { icon: Eye, label: 'ScreenShare' },
+  { icon: Eye, label: 'Full Stack' },
   { icon: ShieldCheck, label: 'Admin' },
-  { icon: FiveMIcon, label: 'FiveM' },
 ]
 // ─────────────────────────────────────────────────────────────────
 
