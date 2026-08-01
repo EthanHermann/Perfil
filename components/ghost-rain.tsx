@@ -6,7 +6,7 @@ const HACKER_CHARS = ['0', '1', 'A', 'B', 'C', 'D', 'E', 'F', 'x', '>', '<', '/'
 const FALLING_CHARS = Array.from({ length: 50 }).map((_, i) => ({
   char: HACKER_CHARS[i % HACKER_CHARS.length],
   left: (i * 2) % 100,
-  delay: (i * 0.15),
+  delay: (i * 0.15) - (11 + Math.random() * 5), // Delay negativo para parecer que já começou
   duration: 11 + Math.random() * 5,
   drift: (Math.random() - 0.5) * 35,
 }))
